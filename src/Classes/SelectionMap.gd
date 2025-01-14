@@ -1,10 +1,17 @@
 class_name SelectionMap
 extends Image
 
-var invert_shader := preload("res://src/Shaders/Invert.gdshader")
+const INVERT_SHADER := preload("res://src/Shaders/Effects/Invert.gdshader")
+const OUTLINE_INLINE_SHADER := preload("res://src/Shaders/Effects/OutlineInline.gdshader")
 
 
-func is_pixel_selected(pixel: Vector2i) -> bool:
+func is_pixel_selected(pixel: Vector2i, calculate_offset := true) -> bool:
+	var selection_position: Vector2i = Global.canvas.selection.big_bounding_rectangle.position
+	if calculate_offset:
+		if selection_position.x < 0:
+			pixel.x -= selection_position.x
+		if selection_position.y < 0:
+			pixel.y -= selection_position.y
 	if pixel.x < 0 or pixel.y < 0 or pixel.x >= get_width() or pixel.y >= get_height():
 		return false
 	var selected: bool = get_pixelv(pixel).a > 0
@@ -70,6 +77,13 @@ func select_pixel(pixel: Vector2i, select := true) -> void:
 		set_pixelv(pixel, Color(0))
 
 
+func select_rect(rect: Rect2i, select := true) -> void:
+	if select:
+		fill_rect(rect, Color(1, 1, 1, 1))
+	else:
+		fill_rect(rect, Color(0))
+
+
 func select_all() -> void:
 	fill(Color(1, 1, 1, 1))
 
@@ -81,8 +95,27 @@ func clear() -> void:
 func invert() -> void:
 	var params := {"red": true, "green": true, "blue": true, "alpha": true}
 	var gen := ShaderImageEffect.new()
-	gen.generate_image(self, invert_shader, params, get_size())
-	self.convert(Image.FORMAT_LA8)
+	gen.generate_image(self, INVERT_SHADER, params, get_size())
+
+
+## Returns a copy of itself that is cropped to [param size].
+## Used for when the selection map is bigger than the [Project] size.
+func return_cropped_copy(size: Vector2i) -> SelectionMap:
+	var selection_map_copy := SelectionMap.new()
+	selection_map_copy.copy_from(self)
+	var diff := Vector2i.ZERO
+	var selection_position: Vector2i = Global.canvas.selection.big_bounding_rectangle.position
+	if selection_position.x < 0:
+		diff.x += selection_position.x
+	if selection_position.y < 0:
+		diff.y += selection_position.y
+	if diff != Vector2i.ZERO:
+		# If there are pixels out of bounds on the negative side (left & up),
+		# move them before resizing
+		selection_map_copy.fill(Color(0))
+		selection_map_copy.blit_rect(self, Rect2i(Vector2i.ZERO, get_size()), diff)
+	selection_map_copy.crop(size.x, size.y)
+	return selection_map_copy
 
 
 func move_bitmap_values(project: Project, move_offset := true) -> void:
@@ -157,3 +190,36 @@ func resize_bitmap_values(
 	if new_bitmap_size != size:
 		crop(new_bitmap_size.x, new_bitmap_size.y)
 	blit_rect(smaller_image, Rect2i(Vector2i.ZERO, new_bitmap_size), dst)
+
+
+func expand(width: int, brush: int) -> void:
+	var params := {
+		"color": Color(1, 1, 1, 1),
+		"width": width,
+		"brush": brush,
+	}
+	var gen := ShaderImageEffect.new()
+	gen.generate_image(self, OUTLINE_INLINE_SHADER, params, get_size())
+
+
+func shrink(width: int, brush: int) -> void:
+	var params := {
+		"color": Color(0),
+		"width": width,
+		"brush": brush,
+		"inside": true,
+	}
+	var gen := ShaderImageEffect.new()
+	gen.generate_image(self, OUTLINE_INLINE_SHADER, params, get_size())
+
+
+func border(width: int, brush: int) -> void:
+	var params := {
+		"color": Color(1, 1, 1, 1),
+		"width": width,
+		"brush": brush,
+		"inside": true,
+		"keep_border_only": true,
+	}
+	var gen := ShaderImageEffect.new()
+	gen.generate_image(self, OUTLINE_INLINE_SHADER, params, get_size())

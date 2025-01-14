@@ -3,8 +3,8 @@ extends ImageEffect
 enum { LINEAR, RADIAL, LINEAR_DITHERING, RADIAL_DITHERING }
 enum Animate { POSITION, SIZE, ANGLE, CENTER_X, CENTER_Y, RADIUS_X, RADIUS_Y }
 
-var shader_linear := preload("res://src/Shaders/Gradients/Linear.gdshader")
-var shader_linear_dither := preload("res://src/Shaders/Gradients/LinearDithering.gdshader")
+var shader_linear := preload("res://src/Shaders/Effects/Gradients/Linear.gdshader")
+var shader_linear_dither := preload("res://src/Shaders/Effects/Gradients/LinearDithering.gdshader")
 
 var shader := shader_linear
 var dither_matrices: Array[DitherMatrix] = [
@@ -58,21 +58,27 @@ func _ready() -> void:
 func commit_action(cel: Image, project := Global.current_project) -> void:
 	var selection_tex: ImageTexture
 	if selection_checkbox.button_pressed and project.has_selection:
-		selection_tex = ImageTexture.create_from_image(project.selection_map)
+		var selection := project.selection_map.return_cropped_copy(project.size)
+		selection_tex = ImageTexture.create_from_image(selection)
 
 	var dither_texture := selected_dither_matrix.texture
 	var gradient := gradient_edit.gradient
-	var n_of_colors := gradient.offsets.size()
+	var offsets := gradient.offsets
+	offsets.sort()
+	var n_of_colors := offsets.size()
 	# Pass the gradient offsets as an array to the shader
-	# ...but since Godot 3.x doesn't support uniform arrays, instead we construct
+	# ...but we can't provide arrays with variable sizes as uniforms, instead we construct
 	# a nx1 grayscale texture with each offset stored in each pixel, and pass it to the shader
 	var offsets_image := Image.create(n_of_colors, 1, false, Image.FORMAT_L8)
 	# Construct an image that contains the selected colors of the gradient without interpolation
 	var gradient_image := Image.create(n_of_colors, 1, false, Image.FORMAT_RGBA8)
 	for i in n_of_colors:
-		var c := gradient.offsets[i]
+		var c := offsets[i]
 		offsets_image.set_pixel(i, 0, Color(c, c, c, c))
-		gradient_image.set_pixel(i, 0, gradient.colors[i])
+		var actual_index := gradient.offsets.find(offsets[i])
+		if actual_index == -1:
+			actual_index = i
+		gradient_image.set_pixel(i, 0, gradient.colors[actual_index])
 	var offsets_tex := ImageTexture.create_from_image(offsets_image)
 	var gradient_tex: Texture2D
 	if shader == shader_linear:
@@ -108,7 +114,6 @@ func commit_action(cel: Image, project := Global.current_project) -> void:
 	else:
 		var gen := ShaderImageEffect.new()
 		gen.generate_image(cel, shader, params, project.size)
-		await gen.done
 
 
 func _on_ShapeOptionButton_item_selected(index: int) -> void:

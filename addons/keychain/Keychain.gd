@@ -2,19 +2,28 @@ extends Node
 
 const PROFILES_PATH := "user://shortcut_profiles"
 
-## Change these settings
+## [Array] of [ShortcutProfile]s.
 var profiles: Array[ShortcutProfile] = [preload("profiles/default.tres")]
-var selected_profile := profiles[0]
-var profile_index := 0
+var selected_profile := profiles[0]  ## The currently selected [ShortcutProfile].
+var profile_index := 0  ## The index of the currently selected [ShortcutProfile].
+## [Dictionary] of [String] and [InputAction].
 ## Syntax: "action_name": InputAction.new("Action Display Name", "Group", true)
 ## Note that "action_name" must already exist in the Project's Input Map.
 var actions := {}
+## [Dictionary] of [String] and [InputGroup].
 ## Syntax: "Group Name": InputGroup.new("Parent Group Name")
 var groups := {}
-var ignore_actions := []
+var ignore_actions: Array[StringName] = []  ## [Array] of [StringName] input map actions to ignore.
+## If [code]true[/code], ignore Godot's default "ui_" input map actions.
 var ignore_ui_actions := true
-var changeable_types := [true, true, true, true]
-var config_path := "user://cache.ini"
+## A [PackedByteArray] of [bool]s with a fixed length of 4. Used for developers to allow or
+## forbid setting certain types of InputEvents. The first element is for [InputEventKey]s,
+## the second for [InputEventMouseButton]s, the third for [InputEventJoypadButton]s
+## and the fourth for [InputEventJoypadMotion]s.
+var changeable_types: PackedByteArray = [true, true, true, true]
+## The file path of the [code]config_file[/code].
+var config_path := "user://config.ini"
+## Used to store the settings to the filesystem.
 var config_file: ConfigFile
 
 
@@ -39,6 +48,11 @@ class InputGroup:
 		folded = _folded
 
 
+func _init() -> void:
+	for locale in TranslationServer.get_loaded_locales():
+		load_translation(locale)
+
+
 func _ready() -> void:
 	if !config_file:
 		config_file = ConfigFile.new()
@@ -49,11 +63,11 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(PROFILES_PATH)
 	var profile_dir := DirAccess.open(PROFILES_PATH)
 	profile_dir.list_dir_begin()
-	var file_name = profile_dir.get_next()
+	var file_name := profile_dir.get_next()
 	while file_name != "":
 		if !profile_dir.current_is_dir():
 			if file_name.get_extension() == "tres":
-				var file = load(PROFILES_PATH.path_join(file_name))
+				var file := load(PROFILES_PATH.path_join(file_name))
 				if file is ShortcutProfile:
 					profiles.append(file)
 		file_name = profile_dir.get_next()
@@ -85,19 +99,38 @@ func change_profile(index: int) -> void:
 			action_add_event(action, event)
 
 
-func action_add_event(action: String, event: InputEvent) -> void:
+func action_add_event(action: StringName, event: InputEvent) -> void:
 	InputMap.action_add_event(action, event)
 
 
-func action_erase_event(action: String, event: InputEvent) -> void:
+func action_erase_event(action: StringName, event: InputEvent) -> void:
 	InputMap.action_erase_event(action, event)
 
 
-func action_erase_events(action: String) -> void:
+func action_erase_events(action: StringName) -> void:
 	InputMap.action_erase_events(action)
 
 
 func load_translation(locale: String) -> void:
-	var translation = load("res://addons/keychain/translations".path_join(locale + ".po"))
+	var translation_file_path := "res://addons/keychain/translations".path_join(locale + ".po")
+	if not ResourceLoader.exists(translation_file_path, "Translation"):
+		return
+	var translation := load(translation_file_path)
 	if is_instance_valid(translation) and translation is Translation:
 		TranslationServer.add_translation(translation)
+
+
+## Converts a [param text] with snake case to a more readable format, by replacing
+## underscores with spaces. If [param capitalize_first_letter] is [code]true[/code],
+## the first letter of the text is capitalized.
+## E.g, "snake_case" would be converted to "Snake case" if
+## [param capitalize_first_letter] is [code]true[/code], else it would be converted to
+## "snake case".
+func humanize_snake_case(text: String, capitalize_first_letter := true) -> String:
+	text = text.replace("_", " ")
+	if capitalize_first_letter:
+		var first_letter := text.left(1)
+		first_letter = first_letter.capitalize()
+		text = text.right(-1)
+		text = text.insert(0, first_letter)
+	return text

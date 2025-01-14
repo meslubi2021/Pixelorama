@@ -6,16 +6,20 @@ extends ConfirmationDialog
 enum { SELECTED_CELS, FRAME, ALL_FRAMES, ALL_PROJECTS }
 
 var affect: int = SELECTED_CELS
-var selected_cels: Image
-var current_frame: Image
+var selected_cels := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+var current_frame := Image.create(1, 1, false, Image.FORMAT_RGBA8)
 var preview_image := Image.new()
-var preview_texture := ImageTexture.new()
+var aspect_ratio_container: AspectRatioContainer
 var preview: TextureRect
+var live_checkbox: CheckBox
+var wait_time_slider: ValueSlider
+var wait_apply_timer: Timer
 var selection_checkbox: CheckBox
 var affect_option_button: OptionButton
 var animate_panel: AnimatePanel
 var commit_idx := -1  ## The current frame the image effect is being applied to
 var has_been_confirmed := false
+var live_preview := true
 var _preview_idx := 0  ## The current frame being previewed
 
 
@@ -23,12 +27,6 @@ func _ready() -> void:
 	set_nodes()
 	get_ok_button().size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	get_cancel_button().size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	current_frame = Image.create(
-		Global.current_project.size.x, Global.current_project.size.y, false, Image.FORMAT_RGBA8
-	)
-	selected_cels = Image.create(
-		Global.current_project.size.x, Global.current_project.size.y, false, Image.FORMAT_RGBA8
-	)
 	about_to_popup.connect(_about_to_popup)
 	visibility_changed.connect(_visibility_changed)
 	confirmed.connect(_confirmed)
@@ -45,11 +43,13 @@ func _about_to_popup() -> void:
 	Global.canvas.selection.transform_content_confirm()
 	prepare_animator(Global.current_project)
 	set_and_update_preview_image(Global.current_project.current_frame)
-	update_transparent_background_size()
+	aspect_ratio_container.ratio = float(preview_image.get_width()) / preview_image.get_height()
 
 
 # prepares "animate_panel.frames" according to affect
 func prepare_animator(project: Project) -> void:
+	if not is_instance_valid(animate_panel):
+		return
 	var frames: PackedInt32Array = []
 	if affect == SELECTED_CELS:
 		for frame_layer in project.selected_cels:
@@ -136,14 +136,21 @@ func commit_action(_cel: Image, _project := Global.current_project) -> void:
 
 
 func set_nodes() -> void:
+	aspect_ratio_container = $VBoxContainer/AspectRatioContainer
 	preview = $VBoxContainer/AspectRatioContainer/Preview
+	live_checkbox = $VBoxContainer/LiveSettings/LiveCheckbox
+	wait_time_slider = $VBoxContainer/LiveSettings/WaitTime
+	wait_apply_timer = $VBoxContainer/LiveSettings/WaitApply
 	selection_checkbox = $VBoxContainer/OptionsContainer/SelectionCheckBox
 	affect_option_button = $VBoxContainer/OptionsContainer/AffectOptionButton
 	animate_panel = $"%AnimatePanel"
-	animate_panel.image_effect_node = self
+	if is_instance_valid(animate_panel):
+		animate_panel.image_effect_node = self
+	if is_instance_valid(live_checkbox):
+		live_checkbox.button_pressed = live_preview
 
 
-func display_animate_dialog():
+func display_animate_dialog() -> void:
 	var animate_dialog: Popup = animate_panel.get_parent()
 	var pos := Vector2(position.x + size.x, position.y)
 	var animate_dialog_rect := Rect2(pos, Vector2(animate_dialog.size.x, size.y))
@@ -152,13 +159,14 @@ func display_animate_dialog():
 
 
 func _commit_undo(action: String, undo_data: Dictionary, project: Project) -> void:
+	var tile_editing_mode := TileSetPanel.tile_editing_mode
+	if tile_editing_mode == TileSetPanel.TileEditingMode.MANUAL:
+		tile_editing_mode = TileSetPanel.TileEditingMode.AUTO
+	project.update_tilemaps(undo_data, tile_editing_mode)
 	var redo_data := _get_undo_data(project)
 	project.undos += 1
 	project.undo_redo.create_action(action)
-	for image in redo_data:
-		project.undo_redo.add_do_property(image, "data", redo_data[image])
-	for image in undo_data:
-		project.undo_redo.add_undo_property(image, "data", undo_data[image])
+	project.deserialize_cel_undo_data(redo_data, undo_data)
 	project.undo_redo.add_do_method(Global.undo_or_redo.bind(false, -1, -1, project))
 	project.undo_redo.add_undo_method(Global.undo_or_redo.bind(true, -1, -1, project))
 	project.undo_redo.commit_action()
@@ -166,24 +174,22 @@ func _commit_undo(action: String, undo_data: Dictionary, project: Project) -> vo
 
 func _get_undo_data(project: Project) -> Dictionary:
 	var data := {}
-	var images := _get_selected_draw_images(project)
-	for image in images:
-		data[image] = image.data
+	project.serialize_cel_undo_data(_get_selected_draw_cels(project), data)
 	return data
 
 
-func _get_selected_draw_images(project: Project) -> Array[Image]:
-	var images: Array[Image] = []
+func _get_selected_draw_cels(project: Project) -> Array[BaseCel]:
+	var images: Array[BaseCel] = []
 	if affect == SELECTED_CELS:
 		for cel_index in project.selected_cels:
 			var cel: BaseCel = project.frames[cel_index[0]].cels[cel_index[1]]
 			if cel is PixelCel:
-				images.append(cel.get_image())
+				images.append(cel)
 	else:
 		for frame in project.frames:
 			for cel in frame.cels:
 				if cel is PixelCel:
-					images.append(cel.get_image())
+					images.append(cel)
 	return images
 
 
@@ -204,14 +210,18 @@ func set_and_update_preview_image(frame_idx: int) -> void:
 	var frame := Global.current_project.frames[frame_idx]
 	selected_cels.resize(Global.current_project.size.x, Global.current_project.size.y)
 	selected_cels.fill(Color(0, 0, 0, 0))
-	Export.blend_selected_cels(selected_cels, frame)
+	DrawingAlgos.blend_layers(selected_cels, frame, Vector2i.ZERO, Global.current_project, true)
 	current_frame.resize(Global.current_project.size.x, Global.current_project.size.y)
 	current_frame.fill(Color(0, 0, 0, 0))
-	Export.blend_all_layers(current_frame, frame)
+	DrawingAlgos.blend_layers(current_frame, frame)
 	update_preview()
 
 
-func update_preview() -> void:
+func update_preview(using_timer := false) -> void:
+	if !live_preview and !using_timer:
+		wait_apply_timer.start()
+		return
+
 	match affect:
 		SELECTED_CELS:
 			preview_image.copy_from(selected_cels)
@@ -219,25 +229,30 @@ func update_preview() -> void:
 			preview_image.copy_from(current_frame)
 	commit_idx = _preview_idx
 	commit_action(preview_image)
-	preview_texture = ImageTexture.create_from_image(preview_image)
-	preview.texture = preview_texture
-
-
-func update_transparent_background_size() -> void:
-	if !preview:
-		return
-	var image_size_y := preview.size.y
-	var image_size_x := preview.size.x
-	if preview_image.get_size().x > preview_image.get_size().y:
-		var scale_ratio := preview_image.get_size().x / image_size_x
-		image_size_y = preview_image.get_size().y / scale_ratio
-	else:
-		var scale_ratio := preview_image.get_size().y / image_size_y
-		image_size_x = preview_image.get_size().x / scale_ratio
-
-	preview.get_node("TransparentChecker").size.x = image_size_x
-	preview.get_node("TransparentChecker").size.y = image_size_y
+	preview.texture = ImageTexture.create_from_image(preview_image)
 
 
 func _visibility_changed() -> void:
+	if visible:
+		return
 	Global.dialog_open(false)
+	# Resize the images to (1, 1) so they do not waste unneeded RAM
+	selected_cels.resize(1, 1)
+	current_frame.resize(1, 1)
+	preview_image = Image.new()
+
+
+func _on_live_checkbox_toggled(toggled_on: bool) -> void:
+	live_preview = toggled_on
+	wait_time_slider.editable = !live_preview
+	wait_time_slider.visible = !live_preview
+	if !toggled_on:
+		size.y += 1  # Reset size of dialog
+
+
+func _on_wait_apply_timeout() -> void:
+	update_preview(true)
+
+
+func _on_wait_time_value_changed(value: float) -> void:
+	wait_apply_timer.wait_time = value / 1000.0

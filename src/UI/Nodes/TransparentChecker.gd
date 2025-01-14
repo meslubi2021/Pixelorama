@@ -11,8 +11,8 @@ func update_rect() -> void:
 		set_bounds(Global.current_project.size)
 	if self == Global.transparent_checker:
 		fit_rect(Global.current_project.tiles.get_bounding_rect())
-		Global.second_viewport.get_node("SubViewport/TransparentChecker").update_rect()
-		Global.small_preview_viewport.get_node("SubViewport/TransparentChecker").update_rect()
+		for canvas_preview in get_tree().get_nodes_in_group("CanvasPreviews"):
+			canvas_preview.get_viewport().get_node("TransparentChecker").update_rect()
 	material.set_shader_parameter("size", Global.checker_size)
 	material.set_shader_parameter("color1", Global.checker_color_1)
 	material.set_shader_parameter("color2", Global.checker_color_2)
@@ -45,10 +45,10 @@ func update_transparency(value: float) -> void:
 	# Change the transparency status of the parent viewport and the root viewport
 	if value == 1.0:
 		get_parent().transparent_bg = false
-		get_tree().get_root().transparent_bg = false
+		get_window().transparent_bg = false
 	else:
 		get_parent().transparent_bg = true
-		get_tree().get_root().transparent_bg = true
+		get_window().transparent_bg = true
 
 	# Set a minimum amount for the fade so the canvas won't disappear
 	material.set_shader_parameter("alpha", clampf(value, 0.1, 1))

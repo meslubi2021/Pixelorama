@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
-"PO-Revision-Date: 2023-08-29 04:07\n"
+"PO-Revision-Date: 2024-11-15 17:31\n"
 
 msgid "OK"
 msgstr "确定"
@@ -25,13 +25,13 @@ msgid "Save"
 msgstr "保存"
 
 msgid "Please Confirm..."
-msgstr "确认..."
+msgstr "请确认..."
 
 msgid "File Name:"
-msgstr "文件名称:"
+msgstr "文件名称："
 
 msgid "Project Name:"
-msgstr "项目名称："
+msgstr "项目名称:"
 
 msgid "Image Size"
 msgstr "图像大小"
@@ -46,10 +46,10 @@ msgid "Size:"
 msgstr "尺寸："
 
 msgid "Width:"
-msgstr "宽度:"
+msgstr "宽度："
 
 msgid "Height:"
-msgstr "高度:"
+msgstr "高度："
 
 msgid "Center"
 msgstr "中心"
@@ -93,8 +93,17 @@ msgstr "保存..."
 msgid "Save as..."
 msgstr "另存为..."
 
-msgid "Use ZSTD Compression"
-msgstr "使用 ZSTD 压缩"
+#. Checkbox found in the Save project dialog. If enabled, the final blended images are being stored also in the pxo, for each frame.
+msgid "Include blended images"
+msgstr "包含混合图像"
+
+#. Hint tooltip of the "Include blended images" checkbox found in the Save project dialog.
+msgid "If enabled, the final blended images are also being stored in the pxo, for each frame.\n"
+"This makes the pxo file larger and is useful for importing by third-party software\n"
+"or CLI exporting. Loading pxo files in Pixelorama does not need this option to be enabled."
+msgstr "如果启用，最终的混合图像也会针对每帧存储在 pxo 中。\n"
+"这会使 pxo 文件更大，并且对于通过第三方软件导入\n"
+"或 CLI 导出非常有用。在 Pixelorama 中加载 pxo 文件不需要启用此选项。"
 
 msgid "Import"
 msgstr "导入"
@@ -141,6 +150,13 @@ msgstr "原位粘贴"
 msgid "Delete"
 msgstr "删除"
 
+msgid "Delete Permanently"
+msgstr "永久删除"
+
+#. Found when requesting to delete a palette or an extension. Refers to when you move something to recycle bin.
+msgid "Move to Trash"
+msgstr "移动到回收站"
+
 msgid "New Brush"
 msgstr "新建画笔"
 
@@ -153,8 +169,13 @@ msgstr "像素"
 msgid "Percentage"
 msgstr "百分比"
 
-msgid "Crop Image"
-msgstr "裁剪图像"
+#. Found in the image menu. Sets the size of the project to be the same as the size of the active selection.
+msgid "Crop to Selection"
+msgstr "裁剪到选区"
+
+#. Found in the image menu. Automatically trims out all the transparent pixels, making the image smaller.
+msgid "Crop to Content"
+msgstr "裁剪到内容"
 
 msgid "Resize Canvas"
 msgstr "调整画布尺寸"
@@ -186,16 +207,53 @@ msgid "Smear options:"
 msgstr "涂抹选项："
 
 msgid "Tolerance:"
-msgstr "容差:"
+msgstr "容差："
 
 msgid "Initial angle:"
-msgstr "初始角度:"
+msgstr "初始角度："
 
 msgid "Clear"
 msgstr "取消选中"
 
 msgid "Invert"
 msgstr "反向"
+
+msgid "Modify"
+msgstr ""
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users expand the active selection.
+msgid "Expand"
+msgstr ""
+
+#. Title of a window that lets users expand the active selection.
+msgid "Expand Selection"
+msgstr ""
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users shrink the active selection.
+msgid "Shrink"
+msgstr ""
+
+#. Title of a window that lets users shrink the active selection.
+msgid "Shrink Selection"
+msgstr ""
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users create a border of the active selection.
+msgid "Border"
+msgstr ""
+
+#. Title of a window that lets users create a border of the active selection.
+msgid "Border Selection"
+msgstr ""
+
+#. Refers to a diamond-like shape.
+msgid "Diamond"
+msgstr ""
+
+msgid "Circle"
+msgstr ""
+
+msgid "Square"
+msgstr ""
 
 msgid "Grayscale View"
 msgstr "灰度视图"
@@ -212,26 +270,27 @@ msgstr "垂直翻转"
 msgid "Preferences"
 msgstr "首选项"
 
+#. An option in the View menu. When selected, the canvas is being placed on the center of the screen.
+msgid "Center Canvas"
+msgstr "居中画布"
+
 msgid "Tile Mode"
 msgstr "平铺模式"
 
 msgid "Tile Mode Offsets"
 msgstr "平铺模式偏移"
 
-msgid "X-basis x:"
-msgstr "X-基准 x:"
+#. Found under "Tile Mode Offsets". Basis is a linear algebra term. https://en.wikipedia.org/wiki/Basis_(linear_algebra)
+msgid "X-basis:"
+msgstr ""
 
-msgid "X-basis y:"
-msgstr "X-基准 y:"
+#. Found under "Tile Mode Offsets". Basis is a linear algebra term. https://en.wikipedia.org/wiki/Basis_(linear_algebra)
+msgid "Y-basis:"
+msgstr ""
 
-msgid "Y-basis x:"
-msgstr "Y-基准 x:"
-
-msgid "Y-basis y:"
-msgstr "Y-基准 y:"
-
-msgid "Tile Mask"
-msgstr "平铺蒙版"
+#. Found under "Tile Mode Offsets". It's a button that when pressed, enables masking for tile mode. Masking essentially limits drawing to the visible pixels of the image, thus preventing from drawing on transparent pixels.
+msgid "Masking:"
+msgstr ""
 
 msgid "Reset"
 msgstr "重置"
@@ -281,8 +340,18 @@ msgstr "添加"
 msgid "Add Layout"
 msgstr "添加布局"
 
-msgid "Edit Layout"
-msgstr "编辑布局"
+msgid "Copy from"
+msgstr "复制从"
+
+msgid "Rename"
+msgstr "重命名"
+
+msgid "Rename Layout"
+msgstr "重命名布局"
+
+#. Refers to the current layout of the user interface.
+msgid "Current layout"
+msgstr "当前布局"
 
 msgid "Are you sure you want to delete this layout?"
 msgstr "您确定要删除此布局吗？"
@@ -315,6 +384,10 @@ msgstr "显示参考线"
 msgid "Show Mouse Guides"
 msgstr "显示鼠标向导"
 
+#. Found under the View menu. When enabled, non-destructive layer effects will be visible on the canvas.
+msgid "Display Layer Effects"
+msgstr "显示图层效果"
+
 #. Found under the View menu.
 msgid "Snap To"
 msgstr "吸附到"
@@ -345,7 +418,7 @@ msgid "Fullscreen Mode"
 msgstr "全屏模式"
 
 msgid "Fill with color:"
-msgstr "使用颜色填充:"
+msgstr "使用颜色填充："
 
 msgid "Open a File"
 msgstr "打开一个文件"
@@ -499,7 +572,7 @@ msgid "Frame"
 msgstr "帧"
 
 msgid "Frames:"
-msgstr "帧:"
+msgstr "帧："
 
 msgid "All Frames"
 msgstr "所有帧"
@@ -514,7 +587,7 @@ msgid "Preview:"
 msgstr "预览："
 
 msgid "Frame:"
-msgstr "帧:"
+msgstr "帧："
 
 msgid "Orientation:"
 msgstr "方向："
@@ -523,7 +596,11 @@ msgid "Browse"
 msgstr "浏览"
 
 msgid "Resize:"
-msgstr "调整大小:"
+msgstr "调整大小："
+
+#. Found in the export dialog, when exporting a jpeg file. Refers to the quality of the exported file.
+msgid "Quality:"
+msgstr "质量："
 
 msgid "Cancel Export"
 msgstr "取消导出"
@@ -565,7 +642,7 @@ msgstr "组图层："
 
 #. A type of layer. A 3D layer contains data of 3D objects that are rasterized automatically by Pixelorama.
 msgid "3D layer:"
-msgstr ""
+msgstr "3D 图层："
 
 msgid "Direction:"
 msgstr "方向："
@@ -583,7 +660,7 @@ msgid "Columns"
 msgstr "列"
 
 msgid "Columns:"
-msgstr "列:"
+msgstr "列："
 
 msgid "Rows"
 msgstr "行"
@@ -591,21 +668,95 @@ msgstr "行"
 msgid "Rows:"
 msgstr "行:"
 
+#. Found in the export dialog, in the Spritesheet tab. An orientation option that splits the spritesheet by animation tags. Each tag creates a new column.
+msgid "Tags by column"
+msgstr "按列标签"
+
+#. Found in the export dialog, in the Spritesheet tab. An orientation option that splits the spritesheet by animation tags. Each tag creates a new row.
+msgid "Tags by row"
+msgstr "按行标签"
+
 #. Found in the export dialog. It is a label that says the dimensions (widthxheight) of the exported image(s).
 msgid "Export dimensions:"
 msgstr "导出尺寸："
 
+msgid "Save a File"
+msgstr "保存文件"
+
+msgid "Go to previous folder."
+msgstr "转到上一个文件夹。"
+
+msgid "Go to next folder."
+msgstr "转到下一个文件夹。"
+
+msgid "Go to parent folder."
+msgstr "转到上级文件夹"
+
 msgid "Path:"
-msgstr "路径:"
+msgstr "路径："
+
+msgid "Refresh files."
+msgstr "刷新文件。"
+
+msgid "Toggle the visibility of hidden files."
+msgstr "切换隐藏文件的可见性。"
 
 msgid "Directories & Files:"
-msgstr "目录和文件:"
+msgstr "目录和文件："
 
 msgid "Create Folder"
 msgstr "创建文件夹"
 
 msgid "File:"
-msgstr "文件:"
+msgstr "文件："
+
+#. Found in "Open" and "Save" file dialogs. Searches all file types.
+msgid "All Files"
+msgstr "所有文件"
+
+#. Found in the "Open" file dialog. Searches all file types supported by Pixelorama.
+msgid "All Recognized"
+msgstr "所有已知的"
+
+#. Found in "Open" and "Save" file dialogs. Searches Pixelorama Project files only (.pxo).
+msgid "Pixelorama Project"
+msgstr "Pixelorama 项目"
+
+#. Found in the "Open" file dialog. Searches PNG files only. (Note that PNG is a file type and should remain untranslated)
+msgid "PNG Image"
+msgstr "PNG 图像"
+
+#. Found in the "Open" file dialog. Searches BMP files only. (Note that BMP is a file type and should remain untranslated)
+msgid "BMP Image"
+msgstr "BMP 图像"
+
+#. Found in the "Open" file dialog. Searches "Radiance HDR" files only. (Note that "Radiance HDR" is a file type and is better untranslated)
+msgid "Radiance HDR Image"
+msgstr "辐射 HDR 图像"
+
+#. Found in the "Open" file dialog. Searches JPEG files only. (Note that JPEG is a file type and should remain untranslated)
+msgid "JPEG Image"
+msgstr "JPEG 图像"
+
+#. Found in the "Open" file dialog. Searches SVG files only. (Note that SVG is a file type and should remain untranslated)
+msgid "SVG Image"
+msgstr "SVG 图像"
+
+#. Found in the "Open" file dialog. Searches TGA files only. (Note that TGA is a file type and should remain untranslated)
+msgid "TGA Image"
+msgstr "TGA 图像"
+
+#. Found in the "Open" file dialog. Searches WebP files only. (Note that WebP is a file type and should remain untranslated)
+msgid "WebP Image"
+msgstr "WebP 图像"
+
+#. Found in the "Open" file dialog. Searches Pixelorama palette files only (.json).
+msgid "Pixelorama palette"
+msgstr "Pixelorama 调色板"
+
+#. Found in the "Open" file dialog. Searches GIMP palette files only (.gpl). (Note that GIMP is a software and should remain untranslated)
+msgid "GIMP palette"
+msgstr "GIMP 调色板"
 
 #. Found in the export dialog. It is a button that when pressed, shows more options.
 msgid "Advanced options"
@@ -628,6 +779,14 @@ msgstr "三线性"
 
 msgid "Constant"
 msgstr "常量"
+
+#. Refers to https://en.wikipedia.org/wiki/Color_space
+msgid "Color space:"
+msgstr "色彩空间："
+
+#. A type of color space.
+msgid "Linear sRGB"
+msgstr "线性 sRGB"
 
 msgid "General"
 msgstr "常规​​​​​"
@@ -712,10 +871,10 @@ msgid "Affect Brush's Alpha"
 msgstr "效果笔刷 Alpha"
 
 msgid "Color:"
-msgstr "颜色:"
+msgstr "颜色："
 
 msgid "Guide color:"
-msgstr "辅助线颜色:"
+msgstr "辅助线颜色："
 
 msgid "System Language"
 msgstr "系统语言"
@@ -723,8 +882,32 @@ msgstr "系统语言"
 msgid "Display scale:"
 msgstr "显示比例："
 
+#. Refers to the font of a text.
+msgid "Font:"
+msgstr "字体："
+
+#. Found in the preferences, under the interface section. Allows users to set the size of the font, ie the text.
+msgid "Font size:"
+msgstr "字体大小："
+
 msgid "Dim interface on dialog popup"
 msgstr "对话框弹出时变暗界面"
+
+#. Found in the preferences, under the interface section. When this setting is enabled, the native file dialogs of the operating system are being used, instead of Pixelorama's custom ones.
+msgid "Use native file dialogs"
+msgstr "使用本机文件对话框"
+
+#. Found in the preferences, tooltip of the "Use native file dialogs" option.
+msgid "When this setting is enabled, the native file dialogs of the operating system are being used, instead of Pixelorama's custom ones."
+msgstr "启用此设置后，将使用操作系统的本机文件对话框，而不是 Pixelorama 的自定义对话框。"
+
+#. Found in the preferences, under the interface section. When this setting is enabled, Pixelorama's subwindows will be embedded in the main window, otherwise each dialog will be its own separate window.
+msgid "Single window mode"
+msgstr "单窗口模式"
+
+#. Found in the preferences, tooltip of the "Single window mode" option.
+msgid "When this setting is enabled, Pixelorama's subwindows will be embedded in the main window, otherwise each dialog will be its own separate window."
+msgstr "启用此设置后，Pixelorama 的子窗口将嵌入主窗口中，否则每个对话框将是其自己的单独窗口。"
 
 msgid "Dark"
 msgstr "深色"
@@ -743,6 +926,10 @@ msgstr "白色"
 
 msgid "Purple"
 msgstr "紫色"
+
+#. A theme. Rose refers to the color rose.
+msgid "Rose"
+msgstr "玫瑰"
 
 msgid "Theme"
 msgstr "主题"
@@ -764,6 +951,16 @@ msgstr "背景颜色从："
 
 msgid "Background color:"
 msgstr "背景颜色："
+
+#. Found in the preferences, under the Tools category.
+msgid "Share options between the left and the right tools"
+msgstr "在左侧和右侧工具之间共享选项"
+
+#. Found in the preferences, under the Tools category. Tooltip of the "Share options between the left and the right tools" preference.
+msgid "If this is enabled, options will be synced between the left and the right tool.\n"
+"For example, both tools will share the same brush size, and changing it on one tool will instantly change on the other."
+msgstr "如果启用此功能，左侧和右侧工具之间的选项将同步。\n"
+"例如，两个工具将共享相同的画笔大小，并且在一个工具上更改它会立即在另一个工具上更改。"
 
 msgid "Left tool color:"
 msgstr "左侧工具颜色："
@@ -813,12 +1010,15 @@ msgstr "修改蓝色通道"
 msgid "Modify Alpha Channel"
 msgstr "修改 Alpha 通道"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Desaturation"
 msgstr "去饱和"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Outline"
 msgstr "轮廓"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Drop Shadow"
 msgstr "阴影"
 
@@ -831,8 +1031,25 @@ msgstr "偏移 Y："
 msgid "Shadow color:"
 msgstr "阴影颜色："
 
-msgid "Adjust Hue/Saturation/Value"
-msgstr "调整色相/饱和度/值"
+#. An image effect. https://en.wikipedia.org/wiki/Gaussian_blur
+msgid "Gaussian Blur"
+msgstr "高斯模糊"
+
+#. The type of the Gaussian blur, an image effect.
+msgid "Blur type:"
+msgstr "模糊类型："
+
+#. The applied amount of Gaussian blur, an image effect.
+msgid "Blur amount:"
+msgstr "模糊数量："
+
+#. The applied radius of Gaussian blur, an image effect.
+msgid "Blur radius:"
+msgstr "模糊半径："
+
+#. The applied direction of Gaussian blur, an image effect.
+msgid "Blur direction:"
+msgstr "模糊方向："
 
 msgid "Gradient"
 msgstr "渐变"
@@ -888,23 +1105,63 @@ msgstr "中心："
 msgid "Dithering pattern:"
 msgstr "抖动模式："
 
-msgid "Adjust HSV"
-msgstr "调整 HSV"
-
 msgid "Type:"
 msgstr "类型："
 
 msgid "Angle:"
 msgstr "角度："
 
+#. An image effect. Adjusts the hue, saturation and value of the colors of an image. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Adjust Hue/Saturation/Value"
+msgstr "调整色相/饱和度/值"
+
+#. HSV stands for Hue, Saturation & Value.
+msgid "Adjust HSV"
+msgstr "调整 HSV"
+
+#. Refers to the hue of the colors of an image.
 msgid "Hue:"
 msgstr "色相："
 
+#. Refers to the saturation of the colors of an image.
 msgid "Saturation:"
 msgstr "饱和度："
 
+#. Refers to the value (as in HSV) of the colors of an image.
 msgid "Value:"
 msgstr "值："
+
+#. An image effect. Adjusts the brightness and contrast of the colors of an image.
+msgid "Adjust Brightness/Contrast"
+msgstr "调整亮度/对比度"
+
+#. Refers to the brightness of the colors of an image.
+msgid "Brightness:"
+msgstr "亮度："
+
+#. Refers to the contrast of the colors of an image.
+msgid "Contrast:"
+msgstr "对比度："
+
+#. Refers to the red value of the colors of an image.
+msgid "Red value:"
+msgstr "红色值："
+
+#. Refers to the green value of the colors of an image.
+msgid "Green value:"
+msgstr "绿色值："
+
+#. Refers to the blue value of the colors of an image.
+msgid "Blue value:"
+msgstr "蓝色值："
+
+#. Refers to a color that tints an image.
+msgid "Tint color:"
+msgstr "色调颜色："
+
+#. Refers to the factor (how much) a color tints an image.
+msgid "Tint effect factor:"
+msgstr "色调影响因素："
 
 msgid "Apply"
 msgstr "应用"
@@ -916,13 +1173,21 @@ msgid "Place inside image"
 msgstr "放置在图片中"
 
 msgid "Thickness:"
-msgstr "厚度:"
+msgstr "厚度："
 
 msgid "Colors:"
-msgstr "颜色:"
+msgstr "颜色："
 
 msgid "Steps:"
 msgstr "步骤："
+
+#. An image effect. It maps the color of the input to the nearest color in the selected palette. Useful for limiting color in pixel art and for artistic effects. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Palettize"
+msgstr "调色板"
+
+#. An image effect. It makes the input image pixelated. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Pixelize"
+msgstr "像素化"
 
 #. An image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
 msgid "Posterize"
@@ -945,14 +1210,19 @@ msgstr "在线文档"
 msgid "Issue Tracker"
 msgstr "问题追踪器"
 
-msgid "Open Logs Folder"
-msgstr "打开日志文件夹"
+#. Found under the Help menu. When selected, it opens the folder where the application's data are being saved.
+msgid "Open Editor Data Folder"
+msgstr "打开编辑器数据文件夹"
 
 msgid "Changelog"
 msgstr "更新日志"
 
 msgid "About Pixelorama"
 msgstr "关于 Pixelorama"
+
+#. Found under the Help menu. When clicked, it opens the URL of Orama Interactive's patreon page.
+msgid "Support Pixelorama's Development"
+msgstr "支持 Pixelorama 开发"
 
 msgid "Pixelorama - Pixelate your dreams!"
 msgstr "Pixelorama - 像素化您的梦想！"
@@ -961,13 +1231,14 @@ msgid "Developed by Orama Interactive"
 msgstr "由 Orama Interactive 开发 - 简体中文翻译 By 大眼仔~旭（Anan）"
 
 msgid "©2019-present by Orama Interactive and contributors"
-msgstr "© 版权所有 2022 - Orama Interactive 和贡献者"
+msgstr "© 版权所有 2019~2024 - Orama Interactive 和贡献者"
 
 msgid "Website"
 msgstr "网站"
 
-msgid "GitHub Repo"
-msgstr "GitHub 项目"
+#. Found in the About dialog. A button that, when you click it, it opens the URL of Pixelorama's source code.
+msgid "Source Code"
+msgstr "源代码"
 
 msgid "Donate"
 msgstr "捐赠"
@@ -1077,17 +1348,17 @@ msgstr "荷兰语"
 msgid "Belarusian"
 msgstr "白俄罗斯语"
 
-msgid "Development Team"
-msgstr "开发团队"
+#. Found in the About dialog.
+msgid "Lead Developer"
+msgstr "首席开发者"
 
-msgid "Lead Programmer"
-msgstr "首席程序员"
-
+#. Found in the About dialog.
 msgid "UI Designer"
 msgstr "UI 设计师"
 
-msgid "GitHub Contributors"
-msgstr "GitHub 贡献者"
+#. Found in the About dialog. Refers to the people who have contributed code to the project.
+msgid "Authors"
+msgstr "作者"
 
 msgid "Art by: %s"
 msgstr "艺术作者： %s"
@@ -1113,8 +1384,8 @@ msgstr "您有未保存的更改。如果您继续，您的进度将会丢失。
 msgid "Save before exiting?"
 msgstr "退出前保存吗？"
 
-msgid "You have unsaved progress. How do you wish to proceed?"
-msgstr "您有未保存的进度。您想继续吗？"
+msgid "Project %s has unsaved progress. How do you wish to proceed?"
+msgstr "项目 %s 有未保存的进度。您想如何继续？"
 
 msgid "Save & Exit"
 msgstr "保存并退出"
@@ -1166,6 +1437,13 @@ msgstr "套索/自由选择工具\n\n"
 "%s 用于鼠标左键\n"
 "%s 用于鼠标右键"
 
+msgid "Select by Drawing\n\n"
+"%s for left mouse button\n"
+"%s for right mouse button"
+msgstr "按绘图选择\n\n"
+"%s 为鼠标左键\n"
+"%s 为鼠标右键"
+
 msgid "Move\n\n"
 "%s for left mouse button\n"
 "%s for right mouse button"
@@ -1195,6 +1473,10 @@ msgstr "拾色器\n\n"
 "%s 鼠标左键\n"
 "%s 鼠标右键\n\n"
 "从画面的像素中选择一种颜色"
+
+msgid "Crop\n\n"
+"Resize the canvas"
+msgstr "调整画布大小"
 
 msgid "Pencil\n\n"
 "%s for left mouse button\n"
@@ -1241,6 +1523,21 @@ msgstr "线条工具\n\n"
 "按住 %s 使形状在单击原点居中\n"
 "按住 %s 移动形状的原点"
 
+msgid "Curve Tool\n\n"
+"%s for left mouse button\n"
+"%s for right mouse button\n\n"
+"Draws bezier curves\n"
+"Press %s/%s to add new points\n"
+"Press and drag to control the curvature\n"
+"Press %s to remove the last added point"
+msgstr "曲线工具\n\n"
+"鼠标左键 %s\n"
+"鼠标右键 %s\n\n"
+"绘制贝塞尔曲线\n"
+"按 %s/%s 添加新点\n"
+"按下并拖动来控制曲率\n"
+"按 %s 删除最后添加的点"
+
 msgid "Rectangle Tool\n\n"
 "%s for left mouse button\n"
 "%s for right mouse button\n\n"
@@ -1279,13 +1576,48 @@ msgstr "选择左键工具颜色"
 msgid "Choose a color for the right tool"
 msgstr "选择右键工具颜色"
 
-msgid "Switch left and right colors\n"
-"(%s)"
-msgstr "左右切换颜色\n"
-"(%s)"
+#. Tooltip of the switch colors button found in the color picker panel.
+msgid "Switch left and right colors."
+msgstr "切换左右颜色。"
+
+#. Tooltip of the average color button, found in the color picker panel. Shows the average color between the two selected.
+msgid "Average Color:"
+msgstr "平均颜色："
 
 msgid "Reset the colors to their default state (black for left, white for right)"
 msgstr "重置颜色为默认状态（黑色为左，白色为右）"
+
+#. Tooltip of the screen color picker button found in the color picker panel.
+msgid "Pick a color from the screen."
+msgstr "拾取屏幕上的颜色。"
+
+#. Tooltip of the color text field found in the color picker panel that lets users change the color by hex code or english name ("red" cannot be translated).
+msgid "Enter a hex code (\"#ff0000\") or named color (\"red\")."
+msgstr "输入十六进制代码（“#ff0000”）或命名颜色（“红色”）。"
+
+#. Tooltip of the button found in the color picker panel that lets users change the shape of the color picker.
+msgid "Select a picker shape."
+msgstr "选择一个选择器形状。"
+
+#. Refers to color-related options such as sliders that set color channel values like R, G, B and A.
+msgid "Color options"
+msgstr "颜色选项"
+
+#. Tooltip of the button with three dots found under color options in the color picker panel that lets users change the mode of the color picker/sliders.
+msgid "Select a picker mode."
+msgstr "选择拾取器模式。"
+
+#. Checkbox found in the menu of the button with three dots found under color options in the color picker panel.
+msgid "Colorized Sliders"
+msgstr "着色滑块"
+
+#. Shows saved colors in certain color picker menus.
+msgid "Swatches"
+msgstr "色板"
+
+#. Found under color options in the color picker panel.
+msgid "Recent Colors"
+msgstr "最近使用的颜色"
 
 msgid "Left tool"
 msgstr "左键工具"
@@ -1465,14 +1797,36 @@ msgstr "仅修改自定义预设"
 msgid "Set application FPS limit:"
 msgstr "设置应用程序 FPS 限制："
 
-msgid "Pause application when it loses focus"
-msgstr "失去焦点时暂停应用程序"
-
 msgid "Sets the limit of the application's frames per second. The lower the number, the lower the CPU usage, but the application gets slower, choppier and unresponsive. 0 means that there is no limit."
 msgstr "设置应用程序帧每秒的限制。 数字越低，CPU 使用率越低，但应用程序变慢，限制且反应不灵。0 表示没有限制。"
 
+#. Found in the Preferences, under the Performance section. Changes the value of the maximum undo steps projects can use.
+msgid "Max undo steps:"
+msgstr "最大撤消步骤："
+
+#. An option found in the preferences, under the Performance section.
+msgid "Pause application when it loses focus"
+msgstr "失去焦点时暂停应用程序"
+
+#. Found in the preferences, hint of the "Pause application when it loses focus" option.
 msgid "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 msgstr "如果打开此选项，当应用程序的窗口失去焦点时，它会暂停。 这有助于在空闲时降低 CPU 使用率。 当鼠标进入应用程序的窗口时，应用程序被取消暂停。"
+
+#. An option found in the preferences, under the Performance section. Refers to the screen being updated (redrawn) continuously.
+msgid "Update continuously"
+msgstr "持续更新"
+
+#. Found in the preferences, hint of the "Update continuously" option.
+msgid "If this is toggled on, the application will redraw the screen continuously, even while it's not used. Turning this off helps lower CPU and GPU usage when idle."
+msgstr "如果启用此功能，应用程序将不断重绘屏幕，即使不使用屏幕也是如此。关闭此功能有助于降低空闲时的 CPU 和 GPU 使用率。"
+
+#. An option found in the preferences, under the Performance section.
+msgid "Enable window transparency"
+msgstr "启用窗口透明度"
+
+#. Found in the preferences, hint of the "Enable window transparency" option.
+msgid "If enabled, the application window can become transparent. This affects performance, so keep it off if you don't need it."
+msgstr "如果启用，应用程序窗口可以变得透明。 这会影响性能，因此如果不需要，请将其关闭。"
 
 #. Found in the Preferences, under Drivers. Specifies the renderer/video driver being used.
 msgid "Renderer:"
@@ -1490,6 +1844,7 @@ msgstr "平板电脑驱动程序："
 msgid "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
 msgstr "指定在 Windows 上使用的平板电脑驱动程序。如果你启用了 Windows Ink，选择 winink。"
 
+#. Found in the Preferences, under Extensions.
 msgid "Add Extension"
 msgstr "添加扩展"
 
@@ -1505,17 +1860,33 @@ msgstr "卸载"
 msgid "Open Folder"
 msgstr "打开文件夹"
 
+#. Found in the Preferences, under Extensions. It is a button that, when clicked, opens up the extension explorer which allows users to download extensions from the Internet.
+msgid "Explore Online"
+msgstr "在线浏览"
+
+#. Found in the Preferences, under Extensions. This is the text of a confirmation dialog that appears when the user attempts to enable an extension.
+msgid "Are you sure you want to enable this extension? Make sure to only enable extensions from sources that you trust."
+msgstr "您确定要启用此扩展？请确保只启用来自您信任的来源的扩展。"
+
+#. Found in the Preferences, under Extensions. This is the text of a confirmation dialog that appears when the user attempts to delete an extension.
+msgid "Are you sure you want to delete this extension?"
+msgstr "您确定要删除此扩展名吗？"
+
 #. Hint tooltip of a button in the Global Tool Settings. "Dynamics" let users affect certain brush parameters, such as their size and alpha, based on the pressure of the tablet pen, the velocity of the mouse or the pen, and more in the future.
 msgid "Dynamics"
-msgstr ""
+msgstr "动态"
+
+#. Found in the Dynamics options menu. A stabilizer is a feature that, when enabled, helps artists create smooth lines as they draw.
+msgid "Stabilizer"
+msgstr "稳定器"
 
 #. Found in the Dynamics options menu. Pressure refers to tablet pen pressure.
 msgid "Pressure"
-msgstr ""
+msgstr "压力"
 
 #. Found in the Dynamics options menu. Velocity refers to mouse or tablet pen velocity, meaning how fast it moves.
 msgid "Velocity"
-msgstr ""
+msgstr "速度"
 
 #. Refers to the alpha channel of the colors, in the RGBA color model. The alpha channel is responsible for the transparency of the color.
 msgid "Alpha"
@@ -1535,14 +1906,14 @@ msgstr "阈值"
 
 #. Noun, the start of something.
 msgid "Start"
-msgstr ""
+msgstr "开始比赛"
 
 #. Noun, the end of something.
 msgid "End"
-msgstr ""
+msgstr "结束"
 
 msgid "Brush:"
-msgstr "画笔:"
+msgstr "画笔："
 
 msgid "Select a brush"
 msgstr "选择一个画笔"
@@ -1560,7 +1931,7 @@ msgid "Custom brush"
 msgstr "自定义画笔"
 
 msgid "Brush size:"
-msgstr "画笔大小:"
+msgstr "画笔大小："
 
 msgid "Overwrite color"
 msgstr "覆盖颜色"
@@ -1570,6 +1941,15 @@ msgstr "覆盖颜色而不是混合颜色。 此选项仅与不完全不透明�
 
 msgid "Pixel Perfect"
 msgstr "平滑像素"
+
+msgid "Pixel Perfect\n"
+"Makes lines smooth by removing the extra pixels on the edges"
+msgstr "完美像素\n"
+"通过去除边缘上的额外像素使线条平滑"
+
+#. A button found in the global tool options. When enabled, the alpha value of the pixels being drawn is locked, meaning that the user can only draw on non-transparent pixels.
+msgid "Lock alpha"
+msgstr "锁定 Alpha"
 
 msgid "Fill inside"
 msgstr "内部填充"
@@ -1586,16 +1966,15 @@ msgstr "间隙 X："
 msgid "Gap Y:"
 msgstr "间隙 Y："
 
-msgid "Pixel Perfect\n"
-"Makes lines smooth by removing the extra pixels on the edges"
-msgstr "完美像素\n"
-"通过去除边缘上的额外像素使线条平滑"
-
 msgid "Fill Shape"
 msgstr "填充形状"
 
 msgid "Fills the drawn shape with color, instead of drawing a hollow shape"
 msgstr "用颜色填充绘制的形状，而不是绘制空心形状"
+
+#. Found in the tool options of the Pencil, Eraser and Shading tools. It is a percentage of how dense the brush is. 100% density means that the brush gets completely drawn, anything less leaves gaps inside the brush, acting like a spray tool.
+msgid "Density:"
+msgstr ""
 
 msgid "Brush color from"
 msgstr "画笔颜色从"
@@ -1646,13 +2025,13 @@ msgid "Darken"
 msgstr "加深"
 
 msgid "Amount:"
-msgstr "数量:"
+msgstr "数量："
 
 msgid "Lighten/Darken amount"
 msgstr "减淡/加深数量"
 
 msgid "Pick for:"
-msgstr "拾取:"
+msgstr "拾取："
 
 msgid "Left Color"
 msgstr "左键颜色"
@@ -1669,8 +2048,11 @@ msgstr "放大"
 msgid "Zoom out"
 msgstr "缩小"
 
+msgid "Options"
+msgstr "选项"
+
 msgid "Options:"
-msgstr "选项:"
+msgstr "选项："
 
 msgid "Fit to frame"
 msgstr "适合帧率"
@@ -1703,14 +2085,22 @@ msgstr "水平"
 msgid "Enable horizontal mirrored drawing"
 msgstr "启用水平镜像绘图"
 
-msgid "Enable vertical mirrored drawing"
-msgstr "启用垂直镜像绘图"
-
 msgid "Vertical"
 msgstr "垂直"
 
+msgid "Enable vertical mirrored drawing"
+msgstr "启用垂直镜像绘图"
+
+#. Found in the global tool options, in the menu that appears next to each mirror button. It affects the position of a symmetry guide.
+msgid "Move to canvas center"
+msgstr "移动到画布中心"
+
+#. Found in the global tool options, in the menu that appears next to each mirror button. It affects the position of a symmetry guide.
+msgid "Move to view center"
+msgstr "移动到视图中心"
+
 msgid "Current frame:"
-msgstr "当前帧:"
+msgstr "当前帧："
 
 msgid "Animation mode:"
 msgstr "动画模式："
@@ -1718,38 +2108,26 @@ msgstr "动画模式："
 msgid "Current frame as spritesheet"
 msgstr "当前帧为精灵表"
 
-msgid "Jump to the first frame\n"
-"(%s)"
-msgstr "跳转到第一帧\n"
-"(%s)"
+msgid "Jump to the first frame"
+msgstr "跳转到第一帧"
 
-msgid "Go to the previous frame\n"
-"(%s)"
-msgstr "转到上一帧\n"
-"(%s)"
+msgid "Go to the previous frame"
+msgstr "转到上一帧"
 
-msgid "Play the animation backwards (from end to beginning)\n"
-"(%s)"
-msgstr "向后播放动画（从头到尾）\n"
-"(%s)"
+msgid "Play the animation backwards"
+msgstr "向后播放动画"
 
-msgid "Play the animation forward (from beginning to end)\n"
-"(%s)"
-msgstr "向前播放动画（从头到尾）\n"
-"(%s)"
+msgid "Play the animation forward"
+msgstr "向前播放动画"
 
-msgid "Go to the next frame\n"
-"(%s)"
-msgstr "转到下一帧\n"
-"(%s)"
+msgid "Go to the next frame"
+msgstr "转到下一帧"
 
-msgid "Jump to the last frame\n"
-"(%s)"
-msgstr "跳转到最后一帧\n"
-"(%s)"
+msgid "Jump to the last frame"
+msgstr "跳转到最后一帧"
 
-msgid "Onion Skinning settings"
-msgstr "洋葱皮设置"
+msgid "Timeline settings"
+msgstr "时间轴设置"
 
 msgid "Enable/disable Onion Skinning"
 msgstr "启用/禁用洋葱皮"
@@ -1769,7 +2147,7 @@ msgid "Ping-pong loop"
 msgstr "乒乓循环"
 
 msgid "Onion Skinning:"
-msgstr "洋葱皮:"
+msgstr "洋葱皮："
 
 msgid "Past Frames"
 msgstr "过去帧"
@@ -1809,7 +2187,11 @@ msgid "If it's selected, the animation plays only on the frames that have the sa
 msgstr "如果选中，动画仅在具有相同标签的帧上播放。\n"
 "如果没有，动画将播放所有帧，忽略标签。"
 
-#. Found in the timeline, inside the onion skinning settings. If this is enabled, the past and future frames will have appear tinted.
+#. Found in the timeline, inside the timeline settings. It's a slider that sets the size of the cel buttons in the timeline.
+msgid "Cel size:"
+msgstr "像素大小："
+
+#. Found in the timeline, inside the timeline settings. If this is enabled, the past and future frames will have appear tinted.
 msgid "Color mode"
 msgstr "颜色模式"
 
@@ -1852,15 +2234,35 @@ msgstr "链接单元格到"
 msgid "Unlink Cels"
 msgstr "取消链接单元格"
 
-msgid "Frame Properties"
-msgstr "帧属性"
+msgid "Properties"
+msgstr "属性"
+
+msgid "Project Properties"
+msgstr "项目属性"
 
 msgid "Frame properties"
 msgstr "帧属性"
 
+msgid "Layer properties"
+msgstr "图层属性"
+
+msgid "Cel properties"
+msgstr "单元格属性"
+
+msgid "Tag properties"
+msgstr "标签属性"
+
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, a new frame tag is added.
+msgid "New Tag"
+msgstr "新建标签"
+
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, it allows users to paste/import tags from other opened projects.
+msgid "Import Tag"
+msgstr "导入标签"
+
 #. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, the order of the selected frames is being reversed.
 msgid "Reverse Frames"
-msgstr ""
+msgstr "反向帧"
 
 msgid "Layer"
 msgstr "图层"
@@ -1871,21 +2273,25 @@ msgstr "组"
 msgid "Layers"
 msgstr "图层"
 
+#. Found in the layer menu which appears when right clicking on a layer button in the timeline. When enabled, the layer becomes a clipping mask.
+msgid "Clipping mask"
+msgstr "剪切蒙版"
+
 #. Hint tooltip of the create new layer button, found on the left side of the timeline.
 msgid "Create a new layer"
 msgstr "创建一个新的图层"
 
 #. One of the options of the create new layer button.
 msgid "Add Pixel Layer"
-msgstr ""
+msgstr "添加像素图层"
 
 #. One of the options of the create new layer button.
 msgid "Add Group Layer"
-msgstr ""
+msgstr "添加图层组"
 
 #. One of the options of the create new layer button.
 msgid "Add 3D Layer"
-msgstr ""
+msgstr "添加 3D 图层"
 
 msgid "Remove current layer"
 msgstr "移除当前图层"
@@ -1902,8 +2308,96 @@ msgstr "克隆当前图层"
 msgid "Merge current layer with the one below"
 msgstr "当前图层与下面图层合并"
 
+#. Found in the layer's section of the timeline. Refers to layer blend modes, for more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Blend mode:"
+msgstr "混合模式："
+
+#. Found in the layer's section of the timeline, as a blend mode option, only available for group layers. If enabled, group blending is disabled and the group simply acts as a way to organize layers instead of affecting blending.
+msgid "Pass through"
+msgstr "通过"
+
+#. Adjective, refers to something usual/regular, such as the normal blend mode.
+msgid "Normal"
+msgstr "Normal"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Multiply"
+msgstr "正片叠底"
+
+# .Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color burn"
+msgstr "颜色加深"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Linear burn"
+msgstr "线性加深"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Screen"
+msgstr "屏幕"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color dodge"
+msgstr "颜色减淡"
+
+#. Found in the layer's section of the timeline, as category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Contrast"
+msgstr "对比度"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Overlay"
+msgstr "叠加"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Soft light"
+msgstr "柔光"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Hard light"
+msgstr "硬光"
+
+#. Found in the layer's section of the timeline, as a category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Inversion"
+msgstr "反转"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Difference"
+msgstr "差值"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Exclusion"
+msgstr "排除"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Subtract"
+msgstr "减去"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Divide"
+msgstr "相除"
+
+#. Found in the layer's section of the timeline, as a category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Component"
+msgstr "组件"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Hue"
+msgstr "色相"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Saturation"
+msgstr "饱和度"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color"
+msgstr "颜色"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Luminosity"
+msgstr "明度"
+
 msgid "Opacity:"
-msgstr "不透明度:"
+msgstr "不透明度："
 
 msgid "Tile mode opacity:"
 msgstr "平铺模式不透明度："
@@ -2039,6 +2533,10 @@ msgstr "打开文件失败。错误代码 %s"
 msgid "File failed to save. Error code %s"
 msgstr "保存文件失败。错误代码 %s"
 
+#. Appears when the user attempts to export a project as a video, but the process fails. FFMPEG is the external software used to export videos.
+msgid "Video failed to export. Ensure that FFMPEG is installed correctly."
+msgstr "视频导出失败。 确保 FFMPEG 安装正确。"
+
 msgid "File(s) exported"
 msgstr "文件已导出"
 
@@ -2052,10 +2550,10 @@ msgid "Create Palette From Current Sprite"
 msgstr "从当前 Sprite 创建调色板"
 
 msgid "Palette Name:"
-msgstr "调色板名称:"
+msgstr "调色板名称："
 
 msgid "Color Name:"
-msgstr "颜色名称:"
+msgstr "颜色名称："
 
 msgid "Use current left & right colors"
 msgstr "使用当前左侧和右侧颜色"
@@ -2085,7 +2583,7 @@ msgid "Get colors from"
 msgstr "获取颜色从"
 
 msgid "Patrons:"
-msgstr "赞助:"
+msgstr "赞助："
 
 msgid "Want your name or your company to be shown on the splash screen?"
 msgstr "想要在启动屏幕上显示您的名字或公司吗？"
@@ -2123,6 +2621,26 @@ msgstr "默认填充颜色："
 msgid "A default background color of a new image"
 msgstr "设置新建图像的背景颜色"
 
+#. Found in the preferences, under the Reset category.
+msgid "Reset all options available in the Preferences"
+msgstr "重置首选项中的所有可用选项"
+
+#. Found in the preferences, under the Reset category.
+msgid "Reset timeline options"
+msgstr "重置时间轴选项"
+
+#. Found in the preferences, under the Reset category.
+msgid "Reset all tool options"
+msgstr "重置所有工具选项"
+
+#. Found in the preferences, under the Reset category.
+msgid "Remove all extensions"
+msgstr "移除所有扩展"
+
+#. Found in the preferences, under the Reset category.
+msgid "Clear the recently opened file list"
+msgstr "清除最近打开的文件列表"
+
 msgid "Lock aspect ratio"
 msgstr "锁定长宽比"
 
@@ -2139,7 +2657,7 @@ msgid "Preset"
 msgstr "预设"
 
 msgid "Preset:"
-msgstr "预设:"
+msgstr "预设："
 
 msgid "Default"
 msgstr "默认"
@@ -2191,6 +2709,9 @@ msgstr "阴影工具"
 
 msgid "Line Tool"
 msgstr "线条工具"
+
+msgid "Curve Tool"
+msgstr "曲线工具"
 
 msgid "Rectangle Tool"
 msgstr "矩形工具"
@@ -2246,6 +2767,10 @@ msgstr "在启动时打开最后打开的项目"
 msgid "Quit confirmation"
 msgstr "退出确认"
 
+#. Found in the preferences, under the startup section. Path is a noun and it refers to the location in the device where FFMPEG is located at. FFMPEG is a software name and it should not be translated. See https://en.wikipedia.org/wiki/Path_(computing)
+msgid "FFMPEG path"
+msgstr "FFMPEG 路径"
+
 msgid "Enable autosave"
 msgstr "启用自动保存"
 
@@ -2255,9 +2780,17 @@ msgstr "自动保存间隔："
 msgid "minute(s)"
 msgstr "分钟"
 
+#. A setting found in the export dialog. When enabled, a JSON file containing the project's data is also being exported. JSON refers to this https://en.wikipedia.org/wiki/JSON
+msgid "Export JSON data"
+msgstr "导出 JSON 数据"
+
+#. A setting found in the export dialog. When enabled, each layer is being exported as a different file, or as different frames if the target format is gif/apng/video.
+msgid "Split layers"
+msgstr "分割图层"
+
 #. Found in the export dialog.
 msgid "Include frame tags in the file name"
-msgstr ""
+msgstr "在文件名中包含帧标签"
 
 #. Found in the export dialog.
 msgid "Create new folder for each frame tag"
@@ -2269,11 +2802,27 @@ msgstr "创建多个文件，但每个文件都存储在与其帧标签相对应
 
 #. Found in the export dialog. Refers to text characters that acts as separators between text. For example, the "_" in "name_0001".
 msgid "Separator character(s):"
-msgstr ""
+msgstr "分隔符:"
 
 #. Found in the export dialog, as a hint tooltip of the separator character(s) text field.
 msgid "The character(s) that separate the file name and the frame number"
-msgstr ""
+msgstr "分隔文件名称和帧编号的字符(秒)"
+
+#. Found in the export dialog. It is an option that removes the transparent area around non-transparent pixels of the exported images.
+msgid "Trim images"
+msgstr "裁剪图像"
+
+#. Found in the export dialog. Tooltip of the "trim images" option.
+msgid "Trims the exported images to their visible portion, considering each pixel with a non-zero alpha channel as visible."
+msgstr "将导出的图像变为可见部分，考虑到非零透明通道的每个像素。"
+
+#. Found in the export dialog. It is an option that allows users to only export the portions of the images that are within the selected area.
+msgid "Clip image content to selection"
+msgstr "剪辑图像内容到选择"
+
+#. Found in the export dialog. Tooltip of the "clip image content to selection" option.
+msgid "Only export content that is within the bounds of a selected area."
+msgstr "仅导出在选定区域界限内的内容。"
 
 msgid "Close"
 msgstr "关闭"
@@ -2310,8 +2859,13 @@ msgstr "移动所选帧到左侧。"
 msgid "Move the selected frame to the right."
 msgstr "移动所选帧到右侧。"
 
-msgid "Frame duration"
-msgstr "帧持续时间"
+#. Refers to the duration of the frame. Found in the frame properties.
+msgid "Frame duration:"
+msgstr "帧持续时间:"
+
+#. Refers to custom user defined data for projects, frames, cels, tags and layers, found in their respective properties.
+msgid "User data:"
+msgstr "用户数据:"
 
 msgid "Duration"
 msgstr "持续时间"
@@ -2349,13 +2903,54 @@ msgstr "添加一个新颜色"
 msgid "Remove a selected color"
 msgstr "删除所选颜色"
 
+#. Tooltip of the Sort button found in the palette panel.
+msgid "Sort palette"
+msgstr "排序调色板"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette get reversed.
+msgid "Reverse colors"
+msgstr "反向颜色"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their hue.
+msgid "Sort by hue"
+msgstr "按色相排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their saturation.
+msgid "Sort by saturation"
+msgstr "按饱和度排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their value.
+msgid "Sort by value"
+msgstr "按值排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their OKHSL Lightness.
+msgid "Sort by lightness"
+msgstr ""
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their red channel value.
+msgid "Sort by red"
+msgstr "按红色排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their green channel value.
+msgid "Sort by green"
+msgstr "按绿色排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their blue channel value.
+msgid "Sort by blue"
+msgstr "按蓝色排序"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their alpha channel value.
+msgid "Sort by alpha"
+msgstr "按 Alpha 排序"
+
 msgid "Palette with the same name and path already exists!"
 msgstr "具有相同名称和路径的调色板已经存在！"
 
 msgid "Palette name is required!"
 msgstr "调色板名称为必填项！"
 
-msgid "Reducing palette size will reset positions of colors. Colors that don't fit in new palette size will be lost!"
+msgid "Reducing palette size will reset positions of colors.\n"
+"Colors that don't fit in new palette size will be lost!"
 msgstr "减小调色板尺寸将重置颜色的位置。不适合新调色板尺寸的颜色将丢失！"
 
 msgid "Position:"
@@ -2414,10 +3009,10 @@ msgid "Locked Aspect Ratio"
 msgstr "锁定长宽比"
 
 msgid "Margins:"
-msgstr "边距:"
+msgstr "边距："
 
 msgid "Aspect Ratio:"
-msgstr "长宽比:"
+msgstr "长宽比："
 
 msgid "Top:"
 msgstr "顶部："
@@ -2440,11 +3035,11 @@ msgstr "锁定大小\n\n"
 
 #. A tool used in 3D layers, that edits 3D objects.
 msgid "3D Shape Edit"
-msgstr ""
+msgstr "3D 形状编辑"
 
 #. Used in 3D layers. A type of 3D object.
 msgid "Box"
-msgstr ""
+msgstr "正方体"
 
 #. Used in 3D layers. A type of 3D object.
 msgid "Sphere"
@@ -2475,19 +3070,19 @@ msgstr "文本"
 
 #. Used in 3D layers. A type of light.
 msgid "Directional light"
-msgstr ""
+msgstr "平行光"
 
 #. Used in 3D layers. A type of light.
 msgid "Spotlight"
-msgstr ""
+msgstr "聚光灯"
 
 #. Used in 3D layers. A type of light.
 msgid "Point light"
-msgstr ""
+msgstr "点光"
 
 #. Used in 3D layers. A type of 3D object.
 msgid "Custom model"
-msgstr ""
+msgstr "自定义模型"
 
 msgid "Selected object:"
 msgstr "已选对象"
@@ -2515,25 +3110,25 @@ msgstr "正交"
 
 #. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
 msgid "Frustum"
-msgstr ""
+msgstr "椎体"
 
 msgid "Rotation:"
-msgstr ""
+msgstr "旋转"
 
 msgid "Scale:"
 msgstr "缩放："
 
 #. Found in the tool options of the 3D Shape Edit tool.
 msgid "Environment"
-msgstr ""
+msgstr "环境"
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
 msgid "Ambient color:"
-msgstr ""
+msgstr "环境颜色："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
 msgid "Ambient color energy:"
-msgstr ""
+msgstr "环境颜色能量："
 
 #. An option that toggles the visibility of something on or off. Found in the format of "Visible: on/off"
 msgid "Visible:"
@@ -2541,7 +3136,7 @@ msgstr "可见："
 
 #. Refers to the transformation options of an object, such as its position, rotation and scale. For technical details, see https://docs.godotengine.org/en/stable/tutorials/math/matrices_and_transforms.html
 msgid "Transform"
-msgstr ""
+msgstr "变换"
 
 #. Found in the tool options of the 3D Shape Edit tool. A category with mesh-related options.
 msgid "Mesh"
@@ -2549,7 +3144,7 @@ msgstr "网格"
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Prism is selected. Refers to the displacement of the upper edge along the X axis.
 msgid "Left to right:"
-msgstr ""
+msgstr "从左到右"
 
 #. Radius of a circle/spherical object.
 msgid "Radius:"
@@ -2557,15 +3152,15 @@ msgstr "半径："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected.
 msgid "Radial segments:"
-msgstr ""
+msgstr "字段数量："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected. Refers to the number of segments along the height of the sphere.
 msgid "Rings:"
-msgstr ""
+msgstr "圆环"
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Sphere is selected. If true, a hemisphere is created rather than a full sphere.
 msgid "Is hemisphere:"
-msgstr ""
+msgstr "半球："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
 msgid "Top radius:"
@@ -2576,7 +3171,11 @@ msgid "Bottom radius:"
 msgstr "下半径："
 
 msgid "Text:"
-msgstr "文本:"
+msgstr "文本："
+
+#. Refers to the depth of something, such as the depth of a 3D object.
+msgid "Depth:"
+msgstr "深度："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Refers to the size of one pixel's width on the text to scale it in 3D.
 msgid "Pixel size:"
@@ -2584,10 +3183,13 @@ msgstr "像素大小："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Step (in pixels) used to approximate Bézier curves.
 msgid "Curve step:"
-msgstr ""
+msgstr "曲线步骤："
 
 msgid "Horizontal alignment:"
-msgstr ""
+msgstr "水平对齐"
+
+msgid "Vertical alignment:"
+msgstr "垂直对齐："
 
 msgid "Left"
 msgstr "左"
@@ -2595,20 +3197,24 @@ msgstr "左"
 msgid "Right"
 msgstr "右"
 
+#. Refers to the vertical space between lines in a text.
+msgid "Line spacing:"
+msgstr "行间距："
+
 #. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. Refers to the energy of the light. The more energy, the brighter it shines.
 msgid "Energy:"
-msgstr ""
+msgstr "能量："
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. If true, the light's effect is reversed, darkening areas and casting bright shadows.
 msgid "Negative:"
-msgstr ""
+msgstr "负片："
 
 msgid "Shadow:"
-msgstr ""
+msgstr "阴影："
 
 #. Refers to the range of something, like the range of a spotlight.
 msgid "Range:"
-msgstr ""
+msgstr "范围："
 
 #. Found under certain image effects that support properties that can be animated.
 msgid "Animatable Properties"
@@ -2688,11 +3294,107 @@ msgstr "结束时的反弹"
 
 #. Found under certain image effects that support properties that can be animated. A type of interpolation.
 msgid "Backing out at ends"
-msgstr ""
+msgstr "在线束时倒退"
 
-msgid "Silhouette"
-msgstr "轮廓"
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Spring towards the end"
+msgstr "跳转到结束"
 
-msgid "Blacks out the image and makes all opaque pixels a dark color."
-msgstr "使图像变黑，并使所有不透明像素变成深色。"
+#. Used to turn images into a singular color
+msgid "Monochrome"
+msgstr "单色"
+
+#. Found in the Reference Images panel when no reference image has been imported.
+msgid "When opening an image, it may be imported as a reference."
+msgstr "打开图像时，可以将其导入作为参考。"
+
+#. Found in the Reference Images panel after a reference image has been imported.
+msgid "Select an image below to change its properties.\n"
+"Note that you cannot draw while a reference image is selected."
+msgstr "选择下面的图像以更改其属性。\n"
+"请注意，选择参考图像时无法绘图。"
+
+#. Removes the selected reference image.
+msgid "Remove"
+msgstr "移除"
+
+#. A tooltip to tell users to hold the Shift key while clicking the remove button
+msgid "Hold Shift while pressing to instantly remove."
+msgstr "按住 Shift 键并按下即可立即删除。"
+
+#. Shown in the confirmation dialog for removing a reference image.
+msgid "Are you sure you want to remove this reference image? It will not be deleted from your file system."
+msgstr "您确定要删除此参考图像吗？它不会从您的文件系统中删除。"
+
+#. Moves the reference image up in the list
+msgid "Move the selected reference image to the right"
+msgstr "将选中的参考图像移动到右侧"
+
+#. Moves the reference image down in the list
+msgid "Move the selected reference image to the left"
+msgstr "将选中的参考图像移动到左侧"
+
+#. Select a reference on the canvas
+msgid "Selects a reference image on the canvas"
+msgstr "在画布上选择一个参考图像"
+
+#. Moves the reference on the canvas
+msgid "Move the selected reference image"
+msgstr "移动选中的参考图像"
+
+#. Rotates the reference on the canvas
+msgid "Rotate the selected reference image"
+msgstr "移动选中的参考图像"
+
+#. Rotates the reference on the canvas
+msgid "Scale the selected reference image"
+msgstr "缩放选中的参考图像"
+
+#. Button to select no reference images in the Reference Images panel.
+msgid "none"
+msgstr "无"
+
+#. Resets the Transform of the selected reference image on the canvas.
+msgid "Reset Transform"
+msgstr "重置变换"
+
+#. Position of the selected reference image on the canvas.
+msgid "Position"
+msgstr "位置"
+
+#. Scale of the selected reference image on the canvas.
+msgid "Scale"
+msgstr "缩放"
+
+#. Rotation of the selected reference image on the canvas.
+msgid "Rotation"
+msgstr "旋转"
+
+#. Toggle filter of the selected reference image on the canvas.
+msgid "Filter"
+msgstr "筛选器"
+
+#. Opacity of the selected reference image on the canvas.
+msgid "Opacity"
+msgstr "不透明度"
+
+#. Color clamping of the selected reference image on the canvas.
+msgid "Color Clamping"
+msgstr "颜色限制"
+
+#. Used in checkbuttons (like on/off switches) that enable/disable something.
+msgid "Enabled"
+msgstr "已启用"
+
+#. Refers to non-destructive effects (such as outline, drop shadow etc) that are applied to layers. Found in the title of the layer effects dialog.
+msgid "Layer effects"
+msgstr "图层效果"
+
+#. A button that, when pressed, shows a list of effects to add. Found in the the layer effects dialog.
+msgid "Add effect"
+msgstr "添加效果"
+
+#. Text from a confirmation dialog that appears when the user is attempting to drag and drop an image directly from the browser into Pixelorama.
+msgid "Do you want to download the image from %s?"
+msgstr "您想从 %s 下载图像吗？"
 

@@ -16,10 +16,12 @@ resource_name = "Layout"
 script = ExtResource("3")
 root = SubResource("1")
 hidden_tabs = {}
+windows = {}
+save_on_change = false
 
 [node name="ManageLayouts" type="AcceptDialog"]
 title = "Manage Layouts"
-exclusive = false
+size = Vector2i(500, 500)
 script = ExtResource("1")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -29,7 +31,7 @@ anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = -8.0
-offset_bottom = -36.0
+offset_bottom = -49.0
 
 [node name="PreviewHeader" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -53,6 +55,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="LayoutPreview" type="Container" parent="VBoxContainer/PreviewContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -78,6 +81,7 @@ layout_mode = 2
 text = "Double click to set as new startup layout"
 
 [node name="SavedLayouts" type="ItemList" parent="VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
@@ -86,39 +90,55 @@ layout_mode = 2
 
 [node name="AddLayout" type="Button" parent="VBoxContainer/ButtonsContainer"]
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 text = "Add"
 
-[node name="EditLayout" type="Button" parent="VBoxContainer/ButtonsContainer"]
+[node name="RenameLayout" type="Button" parent="VBoxContainer/ButtonsContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 disabled = true
-text = "Edit"
+text = "Rename"
 
 [node name="DeleteLayout" type="Button" parent="VBoxContainer/ButtonsContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 disabled = true
 text = "Delete"
 
 [node name="LayoutSettings" type="ConfirmationDialog" parent="."]
+always_on_top = true
 
-[node name="LayoutName" type="LineEdit" parent="LayoutSettings"]
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 8.0
-offset_top = -26.0
-offset_right = -8.0
-offset_bottom = -2.0
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutSettings"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LayoutName" type="LineEdit" parent="LayoutSettings/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Insert name"
 
+[node name="HBoxContainer" type="HBoxContainer" parent="LayoutSettings/VBoxContainer"]
+layout_mode = 2
+
+[node name="LayoutFromLabel" type="Label" parent="LayoutSettings/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Copy from"
+
+[node name="LayoutFrom" type="OptionButton" parent="LayoutSettings/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "Current layout"
+
 [node name="DeleteConfirmation" type="ConfirmationDialog" parent="."]
+always_on_top = true
 dialog_text = "Are you sure you want to delete this layout?"
 
 [connection signal="about_to_popup" from="." to="." method="_on_ManageLayouts_about_to_show"]
@@ -127,7 +147,7 @@ dialog_text = "Are you sure you want to delete this layout?"
 [connection signal="item_activated" from="VBoxContainer/SavedLayouts" to="." method="_on_SavedLayouts_item_activated"]
 [connection signal="item_selected" from="VBoxContainer/SavedLayouts" to="." method="_on_SavedLayouts_item_selected"]
 [connection signal="pressed" from="VBoxContainer/ButtonsContainer/AddLayout" to="." method="_on_AddLayout_pressed"]
-[connection signal="pressed" from="VBoxContainer/ButtonsContainer/EditLayout" to="." method="_on_EditLayout_pressed"]
+[connection signal="pressed" from="VBoxContainer/ButtonsContainer/RenameLayout" to="." method="_on_rename_layout_pressed"]
 [connection signal="pressed" from="VBoxContainer/ButtonsContainer/DeleteLayout" to="." method="_on_DeleteLayout_pressed"]
 [connection signal="confirmed" from="LayoutSettings" to="." method="_on_LayoutSettings_confirmed"]
 [connection signal="confirmed" from="DeleteConfirmation" to="." method="_on_DeleteConfirmation_confirmed"]

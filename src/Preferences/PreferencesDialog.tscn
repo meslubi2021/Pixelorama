@@ -1,19 +1,21 @@
-[gd_scene load_steps=9 format=3 uid="uid://b3hkjj3s6pe4x"]
+[gd_scene load_steps=11 format=3 uid="uid://b3hkjj3s6pe4x"]
 
 [ext_resource type="Script" path="res://src/Preferences/PreferencesDialog.gd" id="1"]
-[ext_resource type="Script" path="res://src/Preferences/HandleExtensions.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="3"]
-[ext_resource type="Script" path="res://src/Preferences/HandleLanguages.gd" id="4"]
-[ext_resource type="Script" path="res://src/Preferences/HandleThemes.gd" id="5"]
-[ext_resource type="PackedScene" path="res://src/UI/Nodes/ValueSliderV2.tscn" id="7"]
-[ext_resource type="Script" path="res://src/UI/Nodes/ValueSlider.gd" id="8"]
+[ext_resource type="Script" path="res://src/Preferences/ThemesPreferences.gd" id="3_nvl8k"]
+[ext_resource type="Script" path="res://src/Preferences/GridPreferences.gd" id="4_76iff"]
+[ext_resource type="PackedScene" uid="uid://yjhp0ssng2mp" path="res://src/UI/Nodes/Sliders/ValueSlider.tscn" id="5_rlmsh"]
+[ext_resource type="PackedScene" path="res://src/UI/Nodes/Sliders/ValueSliderV2.tscn" id="7"]
+[ext_resource type="Script" path="res://src/Preferences/ExtensionsPreferences.gd" id="7_8ume5"]
+[ext_resource type="Script" path="res://src/UI/Nodes/Sliders/ValueSlider.gd" id="8"]
+[ext_resource type="PackedScene" uid="uid://chy5d42l72crk" path="res://src/UI/ExtensionExplorer/Store.tscn" id="8_jmnx8"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_8vsfb"]
 
 [node name="PreferencesDialog" type="AcceptDialog"]
 title = "Preferences"
+position = Vector2i(0, 36)
 size = Vector2i(800, 500)
-exclusive = false
 script = ExtResource("1")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
@@ -23,11 +25,11 @@ anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = -8.0
-offset_bottom = -36.0
+offset_bottom = -49.0
 size_flags_horizontal = 3
 theme_override_constants/separation = 20
 theme_override_constants/autohide = 0
-split_offset = 1
+split_offset = 125
 
 [node name="List" type="ItemList" parent="HSplitContainer"]
 custom_minimum_size = Vector2(85, 0)
@@ -89,10 +91,17 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "On"
 
+[node name="FFMPEGPathLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Startup/StartupContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+text = "FFMPEG path"
+
+[node name="FFMPEGPath" type="LineEdit" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Startup/StartupContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+
 [node name="Language" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-script = ExtResource("4")
 
 [node name="LanguageHeader" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Language"]
 layout_mode = 2
@@ -111,6 +120,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 tooltip_text = "System Language"
 mouse_default_cursor_shape = 2
+button_pressed = true
 button_group = SubResource("ButtonGroup_8vsfb")
 text = "System Language"
 
@@ -171,8 +181,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Font size:"
 
-[node name="FontSizeSlider" type="TextureProgressBar" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
+[node name="FontSizeContainer" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
 layout_mode = 2
+
+[node name="FontSizeSlider" type="TextureProgressBar" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions/FontSizeContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 focus_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"ValueSlider"
@@ -187,6 +202,20 @@ stretch_margin_right = 3
 stretch_margin_bottom = 3
 script = ExtResource("8")
 
+[node name="FontSizeApplyButton" type="Button" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions/FontSizeContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Apply"
+
+[node name="FontLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Font:"
+
+[node name="FontOptionButton" type="OptionButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="DimLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -195,6 +224,32 @@ text = "Dim interface on dialog popup"
 [node name="DimCheckBox" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "On"
+
+[node name="NativeFileDialogsLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions" groups=["DesktopOnly", "NoSandbox"]]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Use native file dialogs"
+
+[node name="NativeFileDialogs" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions" groups=["DesktopOnly", "NoSandbox"]]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "When this setting is enabled, the native file dialogs of the operating system are being used, instead of Pixelorama's custom ones."
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "On"
+
+[node name="SingleWindowModeLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions" groups=["DesktopOnly"]]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Single window mode"
+
+[node name="SingleWindowMode" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions" groups=["DesktopOnly"]]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "When this setting is enabled, Pixelorama's subwindows will be embedded in the main window, otherwise each dialog will be its own separate window."
 mouse_default_cursor_shape = 2
 button_pressed = true
 text = "On"
@@ -214,22 +269,16 @@ size_flags_horizontal = 3
 
 [node name="Themes" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface"]
 layout_mode = 2
-script = ExtResource("5")
+script = ExtResource("3_nvl8k")
 
 [node name="ThemeButtons" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/Themes"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ThemeColorsSpacer" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/Themes"]
+[node name="ThemeColors" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/Themes"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Control" type="Control" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/Themes/ThemeColorsSpacer"]
-layout_mode = 2
-
-[node name="ThemeColors" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/Themes/ThemeColorsSpacer"]
-layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="ButtonHeader" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface"]
 layout_mode = 2
@@ -257,10 +306,9 @@ text = "Tool button size:"
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-item_count = 2
 selected = 0
+item_count = 2
 popup/item_0/text = "Small"
-popup/item_0/id = 0
 popup/item_1/text = "Big"
 popup/item_1/id = 1
 
@@ -271,10 +319,9 @@ text = "Icon color from:"
 [node name="IconColorOptionButton" type="OptionButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/ButtonOptions"]
 layout_mode = 2
 mouse_default_cursor_shape = 2
-item_count = 2
 selected = 0
+item_count = 2
 popup/item_0/text = "Theme"
-popup/item_0/id = 0
 popup/item_1/text = "Custom"
 popup/item_1/id = 1
 
@@ -287,26 +334,6 @@ custom_minimum_size = Vector2(64, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 color = Color(0.75, 0.75, 0.75, 1)
-
-[node name="Label4" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/ButtonOptions"]
-layout_mode = 2
-text = "Left tool color:"
-
-[node name="LeftToolColorButton" type="ColorPickerButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/ButtonOptions"]
-custom_minimum_size = Vector2(64, 20)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-color = Color(0, 0.52549, 0.811765, 1)
-
-[node name="Label5" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/ButtonOptions"]
-layout_mode = 2
-text = "Right tool color:"
-
-[node name="RightToolColorButton" type="ColorPickerButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/ButtonOptions"]
-custom_minimum_size = Vector2(64, 20)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-color = Color(0.992157, 0.427451, 0.0784314, 1)
 
 [node name="Canvas" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
 visible = false
@@ -457,6 +484,30 @@ layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 3
+script = ExtResource("4_76iff")
+
+[node name="GridsCountLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
+layout_mode = 2
+text = "Grids Visible:"
+
+[node name="Spacer" type="Control" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
+layout_mode = 2
+
+[node name="GridsCount" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions" instance=ExtResource("5_rlmsh")]
+layout_mode = 2
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="GridsSelectLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
+layout_mode = 2
+text = "Editing Grid:"
+
+[node name="Spacer2" type="Control" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
+layout_mode = 2
+
+[node name="GridsSelectContainer" type="HFlowContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
+layout_mode = 2
 
 [node name="GridTypeLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions"]
 layout_mode = 2
@@ -470,10 +521,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Sets the type of the grid between rectangular, isometric or both"
 mouse_default_cursor_shape = 2
-item_count = 3
 selected = 0
+item_count = 3
 popup/item_0/text = "Rectangular"
-popup/item_0/id = 0
 popup/item_1/text = "Isometric"
 popup/item_1/id = 1
 popup/item_2/text = "All"
@@ -765,10 +815,9 @@ text = "Background color from:"
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-item_count = 2
 selected = 0
+item_count = 2
 popup/item_0/text = "Theme"
-popup/item_0/id = 0
 popup/item_1/text = "Custom"
 popup/item_1/id = 1
 
@@ -840,6 +889,54 @@ custom_minimum_size = Vector2(64, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 color = Color(0, 0, 1, 1)
+
+[node name="Tools" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
+visible = false
+layout_mode = 2
+
+[node name="ToolOptions" type="GridContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools"]
+layout_mode = 2
+columns = 3
+
+[node name="ShareOptionsLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "If this is enabled, options will be synced between the left and the right tool.
+For example, both tools will share the same brush size, and changing it on one tool will instantly change on the other."
+mouse_filter = 1
+text = "Share options between the left and the right tools"
+
+[node name="ShareOptionsCheckBox" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "If this is enabled, options will be synced between the left and the right tool.
+For example, both tools will share the same brush size, and changing it on one tool will instantly change on the other."
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="LeftToolColorLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Left tool color:"
+
+[node name="LeftToolColorButton" type="ColorPickerButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+custom_minimum_size = Vector2(64, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+color = Color(0, 0.52549, 0.811765, 1)
+
+[node name="RightToolColorLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Right tool color:"
+
+[node name="RightToolColorButton" type="ColorPickerButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Tools/ToolOptions"]
+custom_minimum_size = Vector2(64, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+color = Color(0.992157, 0.427451, 0.0784314, 1)
 
 [node name="Selection" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
 visible = false
@@ -1005,6 +1102,20 @@ tooltip_text = "Sets the limit of the application's frames per second. The lower
 mouse_default_cursor_shape = 2
 max_value = 144.0
 
+[node name="MaxUndoStepsLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+text = "Max undo steps:"
+
+[node name="MaxUndoSteps" type="SpinBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+max_value = 1000.0
+allow_greater = true
+
 [node name="PauseAppFocusLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer"]
 layout_mode = 2
 tooltip_text = "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
@@ -1016,6 +1127,41 @@ layout_mode = 2
 tooltip_text = "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 mouse_default_cursor_shape = 2
 button_pressed = true
+text = "On"
+
+[node name="UpdateContinuouslyLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer"]
+layout_mode = 2
+tooltip_text = "If this is toggled on, the application will redraw the screen continuously, even while it's not used. Turning this off helps lower CPU and GPU usage when idle."
+mouse_filter = 0
+text = "Update continuously"
+
+[node name="UpdateContinuously" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer"]
+layout_mode = 2
+tooltip_text = "If this is toggled on, the application will redraw the screen continuously, even while it's not used. Turning this off helps lower CPU and GPU usage when idle."
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "On"
+
+[node name="WindowTransparencyLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+tooltip_text = "If enabled, the application window can become transparent. This affects performance, so keep it off if you don't need it."
+mouse_filter = 0
+text = "Enable window transparency"
+
+[node name="WindowTransparency" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+tooltip_text = "If enabled, the application window can become transparent. This affects performance, so keep it off if you don't need it."
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="DummyAudioDriverLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+mouse_filter = 0
+text = "Use dummy audio driver"
+
+[node name="DummyAudioDriver" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Performance/PerformanceContainer" groups=["DesktopOnly"]]
+layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "On"
 
 [node name="Drivers" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
@@ -1039,25 +1185,6 @@ size_flags_horizontal = 3
 layout_mode = 2
 columns = 3
 
-[node name="RendererLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Drivers/DriversContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 0
-text = "Renderer:"
-
-[node name="Renderer" type="OptionButton" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Drivers/DriversContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-tooltip_text = "Specifies the renderer/video driver being used. GLES2 is better for older and low-end devices, but GLES3 may offer more features."
-mouse_default_cursor_shape = 2
-disabled = true
-item_count = 2
-selected = 0
-popup/item_0/text = "OpenGL"
-popup/item_0/id = 0
-popup/item_1/text = "Vulkan"
-popup/item_1/id = 1
-
 [node name="TabletDriverLabel" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Drivers/DriversContainer"]
 unique_name_in_owner = true
 visible = false
@@ -1074,10 +1201,13 @@ size_flags_horizontal = 3
 tooltip_text = "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
 mouse_default_cursor_shape = 2
 
-[node name="Extensions" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
+[node name="Extensions" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide" node_paths=PackedStringArray("preferences_dialog", "add_extension_file_dialog")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-script = ExtResource("2")
+script = ExtResource("7_8ume5")
+preferences_dialog = NodePath("../../../../..")
+add_extension_file_dialog = NodePath("../../../../../AddExtensionFileDialog")
 
 [node name="ExtensionsHeader" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions"]
 layout_mode = 2
@@ -1091,6 +1221,10 @@ text = "Extensions"
 [node name="HSeparator" type="HSeparator" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/ExtensionsHeader"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Explore" type="Button" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/ExtensionsHeader"]
+layout_mode = 2
+text = "Explore Online"
 
 [node name="InstalledExtensions" type="ItemList" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions"]
 layout_mode = 2
@@ -1283,6 +1417,59 @@ tooltip_text = "A default background color of a new image"
 mouse_default_cursor_shape = 2
 color = Color(0, 0, 0, 0)
 
+[node name="Reset" type="VBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide"]
+visible = false
+layout_mode = 2
+
+[node name="ResetHeader" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset/ResetHeader"]
+layout_mode = 2
+theme_type_variation = &"HeaderSmall"
+text = "Reset"
+
+[node name="HSeparator" type="HSeparator" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset/ResetHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResetPreferences" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "Reset all options available in the Preferences"
+
+[node name="ResetTimelineOptions" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Reset timeline options"
+
+[node name="ResetAllToolOptions" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Reset all tool options"
+
+[node name="RemoveAllExtensions" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Remove all extensions"
+
+[node name="ClearRecentFiles" type="CheckBox" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Clear the recently opened file list"
+
+[node name="ResetButton" type="Button" parent="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Reset"
+
 [node name="MustRestart" type="HBoxContainer" parent="HSplitContainer/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
@@ -1292,23 +1479,55 @@ layout_mode = 2
 layout_mode = 2
 text = "Pixelorama must be restarted for changes to take effect."
 
-[node name="Popups" type="Node" parent="."]
-
-[node name="AddExtensionFileDialog" type="FileDialog" parent="Popups"]
+[node name="AddExtensionFileDialog" type="FileDialog" parent="." groups=["FileDialogs"]]
 mode = 1
+title = "Open File(s)"
+size = Vector2i(560, 400)
+always_on_top = true
+ok_button_text = "Open"
+file_mode = 1
 access = 2
-filters = PackedStringArray("*.pck ; Godot Resource Pack File", "*.zip ;")
+filters = PackedStringArray("*.pck ; Godot Resource Pack File", "*.zip")
 show_hidden_files = true
+
+[node name="Store" parent="." instance=ExtResource("8_jmnx8")]
+transient = true
+
+[node name="EnableExtensionConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+always_on_top = true
+dialog_text = "Are you sure you want to enable this extension? Make sure to only enable extensions from sources that you trust."
+dialog_autowrap = true
+
+[node name="DeleteExtensionConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+position = Vector2i(0, 36)
+size = Vector2i(400, 100)
+always_on_top = true
+ok_button_text = "Delete Permanently"
+dialog_text = "Are you sure you want to delete this extension?"
+dialog_autowrap = true
+
+[node name="ResetOptionsConfirmation" type="ConfirmationDialog" parent="."]
+always_on_top = true
+dialog_text = "Are you sure you want to reset the selected options? There will be no way to undo this."
 
 [connection signal="about_to_popup" from="." to="." method="_on_PreferencesDialog_about_to_show"]
 [connection signal="visibility_changed" from="." to="." method="_on_PreferencesDialog_visibility_changed"]
 [connection signal="item_selected" from="HSplitContainer/List" to="." method="_on_List_item_selected"]
-[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Language/System Language" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Language" method="_on_Language_pressed" binds= [1]]
-[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions/ShrinkContainer/ShrinkApplyButton" to="." method="_on_ShrinkApplyButton_pressed"]
+[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Language/System Language" to="." method="_on_language_pressed" binds= [1]]
+[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions/ShrinkContainer/ShrinkApplyButton" to="." method="_on_shrink_apply_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Interface/InterfaceOptions/FontSizeContainer/FontSizeApplyButton" to="." method="_on_font_size_apply_button_pressed"]
+[connection signal="value_changed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions/GridsCount" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Canvas/GridOptions" method="_on_grids_count_value_changed"]
+[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/ExtensionsHeader/Explore" to="Store" method="_on_explore_pressed"]
 [connection signal="empty_clicked" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/InstalledExtensions" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_InstalledExtensions_empty_clicked"]
 [connection signal="item_selected" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/InstalledExtensions" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_InstalledExtensions_item_selected"]
 [connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/HBoxContainer/AddExtensionButton" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_AddExtensionButton_pressed"]
 [connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/HBoxContainer/EnableButton" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_EnableButton_pressed"]
 [connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/HBoxContainer/UninstallButton" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_UninstallButton_pressed"]
 [connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions/HBoxContainer/OpenFolderButton" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_OpenFolderButton_pressed"]
-[connection signal="files_selected" from="Popups/AddExtensionFileDialog" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_AddExtensionFileDialog_files_selected"]
+[connection signal="pressed" from="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Reset/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="files_selected" from="AddExtensionFileDialog" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_AddExtensionFileDialog_files_selected"]
+[connection signal="confirmed" from="DeleteExtensionConfirmation" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_delete_confirmation_confirmed"]
+[connection signal="custom_action" from="DeleteExtensionConfirmation" to="HSplitContainer/VBoxContainer/ScrollContainer/RightSide/Extensions" method="_on_delete_confirmation_custom_action"]
+[connection signal="confirmed" from="ResetOptionsConfirmation" to="." method="_on_reset_options_confirmation_confirmed"]

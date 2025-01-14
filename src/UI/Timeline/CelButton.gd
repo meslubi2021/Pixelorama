@@ -1,22 +1,71 @@
 extends Button
 
-enum MenuOptions { DELETE, LINK, UNLINK, PROPERTIES }
+enum MenuOptions { PROPERTIES, DELETE, LINK, UNLINK }
 
 var frame := 0
 var layer := 0
 var cel: BaseCel
 
+var _is_guide_stylebox := false
+
 @onready var popup_menu: PopupMenu = get_node_or_null("PopupMenu")
-@onready var linked_indicator: Polygon2D = get_node_or_null("LinkedIndicator")
+@onready var linked_rect: ColorRect = $Linked
 @onready var cel_texture: TextureRect = $CelTexture
 @onready var transparent_checker: ColorRect = $CelTexture/TransparentChecker
+@onready var properties: AcceptDialog = Global.control.find_child("CelProperties")
 
 
 func _ready() -> void:
+	Global.cel_switched.connect(cel_switched)
+	Themes.theme_switched.connect(cel_switched.bind(true))
 	cel = Global.current_project.frames[frame].cels[layer]
 	button_setup()
 	_dim_checker()
 	cel.texture_changed.connect(_dim_checker)
+	for selected in Global.current_project.selected_cels:
+		if selected[1] == layer and selected[0] == frame:
+			button_pressed = true
+	if cel is PixelCel:
+		popup_menu.add_item("Delete")
+		popup_menu.add_item("Link Cels to")
+		popup_menu.add_item("Unlink Cels")
+	elif cel is GroupCel:
+		transparent_checker.visible = false
+	elif cel is AudioCel:
+		popup_menu.add_item("Play audio here")
+		_is_playing_audio()
+		Global.cel_switched.connect(_is_playing_audio)
+		Themes.theme_switched.connect(_is_playing_audio)
+		Global.current_project.fps_changed.connect(_is_playing_audio)
+		Global.current_project.layers[layer].audio_changed.connect(_is_playing_audio)
+		Global.current_project.layers[layer].playback_frame_changed.connect(_is_playing_audio)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		tooltip_text = (
+			tr("Frame: %s, Layer: %s") % [frame + 1, Global.current_project.layers[layer].name]
+		)
+
+
+func cel_switched(force_stylebox_change := false) -> void:
+	z_index = 1 if button_pressed else 0
+	var current_theme := Global.control.theme
+	var is_guide := false
+	for selected in Global.current_project.selected_cels:
+		if selected[1] == layer or selected[0] == frame:
+			is_guide = true
+			break
+	if is_guide:
+		if not _is_guide_stylebox or force_stylebox_change:
+			var guide_stylebox := current_theme.get_stylebox("guide", "CelButton")
+			add_theme_stylebox_override("normal", guide_stylebox)
+			_is_guide_stylebox = true
+	else:
+		if _is_guide_stylebox or force_stylebox_change:
+			var normal_stylebox := current_theme.get_stylebox("normal", "CelButton")
+			add_theme_stylebox_override("normal", normal_stylebox)
+			_is_guide_stylebox = false
 
 
 func button_setup() -> void:
@@ -25,22 +74,12 @@ func button_setup() -> void:
 
 	var base_layer := Global.current_project.layers[layer]
 	tooltip_text = tr("Frame: %s, Layer: %s") % [frame + 1, base_layer.name]
-	cel_texture.texture = cel.image_texture
-	if is_instance_valid(linked_indicator):
-		linked_indicator.visible = cel.link_set != null
+	if cel is not AudioCel:
+		cel_texture.texture = cel.image_texture
+	if is_instance_valid(linked_rect):
+		linked_rect.visible = cel.link_set != null
 		if cel.link_set != null:
-			linked_indicator.color.h = cel.link_set["hue"]
-
-
-func _on_CelButton_resized() -> void:
-	cel_texture.custom_minimum_size.x = custom_minimum_size.x - 4
-	cel_texture.custom_minimum_size.y = custom_minimum_size.y - 4
-
-	if is_instance_valid(linked_indicator):
-		linked_indicator.polygon[1].x = custom_minimum_size.x
-		linked_indicator.polygon[2].x = custom_minimum_size.x
-		linked_indicator.polygon[2].y = custom_minimum_size.y
-		linked_indicator.polygon[3].y = custom_minimum_size.y
+			linked_rect.color.h = cel.link_set["hue"]
 
 
 func _on_CelButton_pressed() -> void:
@@ -84,8 +123,7 @@ func _on_CelButton_pressed() -> void:
 			release_focus()
 
 	elif Input.is_action_just_released("right_mouse"):
-		if is_instance_valid(popup_menu):
-			popup_menu.popup(Rect2(get_global_mouse_position(), Vector2.ONE))
+		popup_menu.popup_on_parent(Rect2(get_global_mouse_position(), Vector2.ONE))
 		button_pressed = !button_pressed
 	elif Input.is_action_just_released("middle_mouse"):
 		button_pressed = !button_pressed
@@ -96,14 +134,21 @@ func _on_CelButton_pressed() -> void:
 
 func _on_PopupMenu_id_pressed(id: int) -> void:
 	match id:
+		MenuOptions.PROPERTIES:
+			properties.cel_indices = _get_cel_indices()
+			properties.popup_centered()
 		MenuOptions.DELETE:
-			_delete_cel_content()
+			var layer_class := Global.current_project.layers[layer]
+			if layer_class is AudioLayer:
+				layer_class.playback_frame = frame
+			else:
+				_delete_cel_content()
 
 		MenuOptions.LINK, MenuOptions.UNLINK:
 			var project := Global.current_project
 			if id == MenuOptions.UNLINK:
 				project.undo_redo.create_action("Unlink Cel")
-				var selected_cels := project.selected_cels.duplicate()
+				var selected_cels := _get_cel_indices(true)
 				if not selected_cels.has([frame, layer]):
 					selected_cels.append([frame, layer])  # Include this cel with the selected ones
 				for cel_index in selected_cels:
@@ -181,20 +226,29 @@ func _on_PopupMenu_id_pressed(id: int) -> void:
 
 
 func _delete_cel_content() -> void:
+	var indices := _get_cel_indices()
 	var project := Global.current_project
-	var empty_content = cel.create_empty_content()
-	var old_content = cel.get_content()
 	project.undos += 1
 	project.undo_redo.create_action("Draw")
-	if cel.link_set == null:
-		project.undo_redo.add_do_method(cel.set_content.bind(empty_content))
-		project.undo_redo.add_undo_method(cel.set_content.bind(old_content))
-	else:
-		for linked_cel in cel.link_set["cels"]:
-			project.undo_redo.add_do_method(linked_cel.set_content.bind(empty_content))
-			project.undo_redo.add_undo_method(linked_cel.set_content.bind(old_content))
-	project.undo_redo.add_do_method(Global.undo_or_redo.bind(false, frame, layer, project))
-	project.undo_redo.add_undo_method(Global.undo_or_redo.bind(true, frame, layer, project))
+	for cel_index in indices:
+		var frame_index: int = cel_index[0]
+		var layer_index: int = cel_index[1]
+		var selected_cel := project.frames[frame_index].cels[layer_index]
+		var empty_content = selected_cel.create_empty_content()
+		var old_content = selected_cel.get_content()
+		if selected_cel.link_set == null:
+			project.undo_redo.add_do_method(selected_cel.set_content.bind(empty_content))
+			project.undo_redo.add_undo_method(selected_cel.set_content.bind(old_content))
+		else:
+			for linked_cel in selected_cel.link_set["cels"]:
+				project.undo_redo.add_do_method(linked_cel.set_content.bind(empty_content))
+				project.undo_redo.add_undo_method(linked_cel.set_content.bind(old_content))
+		project.undo_redo.add_do_method(
+			Global.undo_or_redo.bind(false, frame_index, layer_index, project)
+		)
+		project.undo_redo.add_undo_method(
+			Global.undo_or_redo.bind(true, frame_index, layer_index, project)
+		)
 	project.undo_redo.commit_action()
 
 
@@ -203,9 +257,9 @@ func _dim_checker() -> void:
 	if image == null:
 		return
 	if image.is_empty() or image.is_invisible():
-		transparent_checker.self_modulate.a = 0.5
+		transparent_checker.visible = false
 	else:
-		transparent_checker.self_modulate.a = 1.0
+		transparent_checker.visible = true
 
 
 func _get_drag_data(_position: Vector2) -> Variant:
@@ -219,53 +273,92 @@ func _get_drag_data(_position: Vector2) -> Variant:
 	texture_rect.texture = cel_texture.texture
 	button.add_child(texture_rect)
 	set_drag_preview(button)
-
-	return ["Cel", frame, layer]
+	return ["Cel", _get_cel_indices()]
 
 
 func _can_drop_data(_pos: Vector2, data) -> bool:
 	var project := Global.current_project
-	if typeof(data) == TYPE_ARRAY and data[0] == "Cel":
-		var drag_frame = data[1]
-		var drag_layer = data[2]
-		if project.layers[drag_layer].get_script() == project.layers[layer].get_script():
-			if (  # If both cels are on the same layer, or both are not linked
-				drag_layer == layer
-				or (
-					project.frames[frame].cels[layer].link_set == null
-					and project.frames[drag_frame].cels[drag_layer].link_set == null
-				)
-			):
-				if not (drag_frame == frame and drag_layer == layer):
-					var region: Rect2
-					if Input.is_action_pressed("ctrl") or layer != drag_layer:  # Swap cels
-						region = get_global_rect()
-					else:  # Move cels
-						if _get_region_rect(0, 0.5).has_point(get_global_mouse_position()):  # Left
-							region = _get_region_rect(-0.125, 0.125)
-							region.position.x -= 2  # Container spacing
-						else:  # Right
-							region = _get_region_rect(0.875, 1.125)
-							region.position.x += 2  # Container spacing
-					Global.animation_timeline.drag_highlight.global_position = region.position
-					Global.animation_timeline.drag_highlight.size = region.size
-					Global.animation_timeline.drag_highlight.visible = true
-					return true
+	if typeof(data) != TYPE_ARRAY:
+		Global.animation_timeline.drag_highlight.visible = false
+		return false
+	if data[0] != "Cel":
+		Global.animation_timeline.drag_highlight.visible = false
+		return false
+	var drop_cels: Array = data[1]
+	drop_cels.sort_custom(_sort_cel_indices_by_frame)
+	var drop_frames: PackedInt32Array = []
+	var drop_layers: PackedInt32Array = []
+	for cel_idx in drop_cels:
+		drop_frames.append(cel_idx[0])
+		drop_layers.append(cel_idx[1])
+	# Can't move to the same cel
+	for drop_frame in drop_frames:
+		if drop_frame == frame and drop_layers[-1] == layer:
+			Global.animation_timeline.drag_highlight.visible = false
+			return false
+	# Can't move different types of layers between them
+	for drop_layer in drop_layers:
+		if project.layers[drop_layer].get_script() != project.layers[layer].get_script():
+			Global.animation_timeline.drag_highlight.visible = false
+			return false
+
+	var drop_layer := drop_layers[0]
+	# Check if all dropped cels are on the same layer
+	var different_layers := false
+	for l in drop_layers:
+		if l != layer:
+			different_layers = true
+	# Check if any of the dropped cels are linked
+	var are_dropped_cels_linked := false
+	for f in drop_frames:
+		if project.frames[f].cels[drop_layer].link_set != null:
+			are_dropped_cels_linked = true
+
+	if (  # If both cels are on the same layer, or both are not linked
+		drop_layer == layer
+		or (project.frames[frame].cels[layer].link_set == null and not are_dropped_cels_linked)
+	):
+		var region: Rect2
+		if Input.is_action_pressed("ctrl") or different_layers:  # Swap cels
+			region = get_global_rect()
+		else:  # Move cels
+			if _get_region_rect(0, 0.5).has_point(get_global_mouse_position()):  # Left
+				region = _get_region_rect(-0.125, 0.125)
+				region.position.x -= 2  # Container spacing
+			else:  # Right
+				region = _get_region_rect(0.875, 1.125)
+				region.position.x += 2  # Container spacing
+		Global.animation_timeline.drag_highlight.global_position = region.position
+		Global.animation_timeline.drag_highlight.size = region.size
+		Global.animation_timeline.drag_highlight.visible = true
+		return true
 
 	Global.animation_timeline.drag_highlight.visible = false
 	return false
 
 
 func _drop_data(_pos: Vector2, data) -> void:
-	var drop_frame: int = data[1]
-	var drop_layer: int = data[2]
-	var project := Global.current_project
+	var drop_cels: Array = data[1]
+	drop_cels.sort_custom(_sort_cel_indices_by_frame)
+	var drop_frames: PackedInt32Array = []
+	var drop_layers: PackedInt32Array = []
+	for cel_idx in drop_cels:
+		drop_frames.append(cel_idx[0])
+		drop_layers.append(cel_idx[1])
+	var drop_layer := drop_layers[0]
+	var different_layers := false
+	for l in drop_layers:
+		if l != layer:
+			different_layers = true
 
+	var project := Global.current_project
 	project.undo_redo.create_action("Move Cels")
-	if Input.is_action_pressed("ctrl") or layer != drop_layer:  # Swap cels
-		project.undo_redo.add_do_method(project.swap_cel.bind(frame, layer, drop_frame, drop_layer))
+	if Input.is_action_pressed("ctrl") or different_layers:  # Swap cels
+		project.undo_redo.add_do_method(
+			project.swap_cel.bind(frame, layer, drop_frames[0], drop_layer)
+		)
 		project.undo_redo.add_undo_method(
-			project.swap_cel.bind(frame, layer, drop_frame, drop_layer)
+			project.swap_cel.bind(frame, layer, drop_frames[0], drop_layer)
 		)
 	else:  # Move cels
 		var to_frame: int
@@ -273,10 +366,16 @@ func _drop_data(_pos: Vector2, data) -> void:
 			to_frame = frame
 		else:  # Right
 			to_frame = frame + 1
-		if drop_frame < frame:
-			to_frame -= 1
-		project.undo_redo.add_do_method(project.move_cel.bind(drop_frame, to_frame, layer))
-		project.undo_redo.add_undo_method(project.move_cel.bind(to_frame, drop_frame, layer))
+		for drop_frame in drop_frames:
+			if drop_frame < frame:
+				to_frame -= 1
+		var to_frames := range(to_frame, to_frame + drop_frames.size())
+		project.undo_redo.add_do_method(
+			project.move_cels_same_layer.bind(drop_frames, to_frames, layer)
+		)
+		project.undo_redo.add_undo_method(
+			project.move_cels_same_layer.bind(to_frames, drop_frames, layer)
+		)
 
 	project.undo_redo.add_do_method(project.change_cel.bind(frame, layer))
 	project.undo_redo.add_undo_method(
@@ -292,3 +391,47 @@ func _get_region_rect(x_begin: float, x_end: float) -> Rect2:
 	rect.position.x += rect.size.x * x_begin
 	rect.size.x *= x_end - x_begin
 	return rect
+
+
+func _get_cel_indices(add_current_cel := false) -> Array:
+	var indices := Global.current_project.selected_cels.duplicate()
+	if not [frame, layer] in indices:
+		if add_current_cel:
+			indices.append([frame, layer])
+		else:
+			indices = [[frame, layer]]
+	return indices
+
+
+func _sort_cel_indices_by_frame(a: Array, b: Array) -> bool:
+	var frame_a: int = a[0]
+	var frame_b: int = b[0]
+	if frame_a < frame_b:
+		return true
+	return false
+
+
+func _is_playing_audio() -> void:
+	var project := Global.current_project
+	var frame_class := project.frames[frame]
+	var layer_class := project.layers[layer] as AudioLayer
+	var audio_length := layer_class.get_audio_length()
+	var frame_pos := frame_class.position_in_seconds(project, layer_class.playback_frame)
+	var audio_color := Color.LIGHT_GRAY
+	var pressed_stylebox := Global.control.theme.get_stylebox(&"pressed", &"CelButton")
+	if pressed_stylebox is StyleBoxFlat:
+		audio_color = pressed_stylebox.border_color
+	var is_last_frame := frame + 1 >= project.frames.size()
+	if not is_last_frame:
+		is_last_frame = (
+			project.frames[frame + 1].position_in_seconds(project, layer_class.playback_frame)
+			>= audio_length
+		)
+	if frame_pos == 0 or (is_last_frame and frame_pos < audio_length):
+		cel_texture.texture = preload("res://assets/graphics/misc/musical_note.png")
+		cel_texture.self_modulate = audio_color
+		linked_rect.visible = false
+	else:
+		linked_rect.visible = frame_pos < audio_length and frame_pos > 0
+		linked_rect.color = audio_color
+		cel_texture.texture = null

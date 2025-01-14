@@ -1,82 +1,123 @@
 extends AcceptDialog
 
-var artworks := [
-	[  # Licensed under CC-BY-NC-ND, https://creativecommons.org/licenses/by-nc-nd/4.0/
+var artworks: Array[Artwork] = [
+	Artwork.new(
+		preload("res://assets/graphics/splash_screen/artworks/roroto.tres"),
 		"Roroto Sic",
-		preload("res://assets/graphics/splash_screen/artworks/roroto.png"),
 		"https://linktr.ee/Roroto_Sic",
-		Color.WHITE
-	],
-	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
-		"Exuvita",
-		preload("res://assets/graphics/splash_screen/artworks/exuvita.png"),
-		"",
-		Color.BLACK
-	],
-	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
-		"Uch",
+		Color.WHITE,
+		"Licensed under CC-BY-NC-ND, https://creativecommons.org/licenses/by-nc-nd/4.0/"
+	),
+	Artwork.new(
 		preload("res://assets/graphics/splash_screen/artworks/uch.png"),
+		"Uch",
 		"https://www.instagram.com/vs.pxl/",
-		Color.BLACK
-	],
-	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
-		"Wishdream",
+		Color.WHITE,
+		"Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/"
+	),
+	Artwork.new(
 		preload("res://assets/graphics/splash_screen/artworks/wishdream.png"),
-		"https://twitter.com/WishdreamStar",
-		Color.BLACK
-	],
+		"Wishdream",
+		"https://x.com/WishdreamStar",
+		Color.BLACK,
+		"Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/"
+	),
+	Artwork.new(
+		preload("res://assets/graphics/splash_screen/artworks/nighters.png"),
+		"Nighters",
+		"https://www.instagram.com/_artei",
+		Color.WHITE,
+		"Licensed under CC BY 3.0, https://creativecommons.org/licenses/by/3.0/"
+	),
+	Artwork.new(
+		preload("res://assets/graphics/splash_screen/artworks/kalpar.png"),
+		"Kalpar",
+		"https://linktr.ee/kalpar",
+		Color.BLACK,
+		"Licensed under CC BY 3.0, https://creativecommons.org/licenses/by/3.0/"
+	),
 ]
 
 var chosen_artwork: int
 @onready var art_by_label := %ArtistName as Button
 @onready var splash_art_texturerect := %SplashArt as TextureRect
 @onready var version_text := %VersionText as TextureRect
+@onready var show_on_startup := %ShowOnStartup as CheckBox
+
+
+class Artwork:
+	var artwork: Texture2D
+	var artist_name := ""
+	var artist_link := ""
+	var text_modulation: Color
+	var license_information := ""
+
+	func _init(
+		_artwork: Texture2D,
+		_artist_name := "",
+		_artist_link := "",
+		_text_modulation := Color.WHITE,
+		_license_information := ""
+	) -> void:
+		artwork = _artwork
+		artist_name = _artist_name
+		artist_link = _artist_link
+		text_modulation = _text_modulation
+		license_information = _license_information
 
 
 func _ready() -> void:
 	get_ok_button().visible = false
-
-
-func _on_SplashDialog_about_to_show() -> void:
-	var show_on_startup_button: CheckBox = find_child("ShowOnStartup")
-	if Global.config_cache.has_section_key("preferences", "startup"):
-		show_on_startup_button.button_pressed = !Global.config_cache.get_value(
-			"preferences", "startup"
-		)
-	title = "Pixelorama" + " " + Global.current_version
-
-	chosen_artwork = randi() % artworks.size()
-	change_artwork(0)
-
 	if OS.get_name() == "Web":
 		$Contents/ButtonsPatronsLogos/Buttons/OpenLastBtn.visible = false
 
 
-func change_artwork(direction: int) -> void:
-	if chosen_artwork + direction > artworks.size() - 1 or chosen_artwork + direction < 0:
-		chosen_artwork = 0 if direction == 1 else artworks.size() - 1
+func _process(_delta: float) -> void:
+	splash_art_texturerect.queue_redraw()
+
+
+func _on_SplashDialog_about_to_show() -> void:
+	if Global.config_cache.has_section_key("preferences", "startup"):
+		show_on_startup.button_pressed = not Global.config_cache.get_value("preferences", "startup")
+	title = "Pixelorama" + " " + Global.current_version
+
+	if not artworks.is_empty():
+		chosen_artwork = randi() % artworks.size()
+		change_artwork(0)
 	else:
-		chosen_artwork = chosen_artwork + direction
+		$Contents/SplashArt/ChangeArtBtnLeft.visible = false
+		$Contents/SplashArt/ChangeArtBtnRight.visible = false
 
-	splash_art_texturerect.texture = artworks[chosen_artwork][1]
 
-	art_by_label.text = tr("Art by: %s") % artworks[chosen_artwork][0]
-	art_by_label.tooltip_text = artworks[chosen_artwork][2]
-
-	version_text.modulate = artworks[chosen_artwork][3]
+func change_artwork(direction: int) -> void:
+	chosen_artwork = wrapi(chosen_artwork + direction, 0, artworks.size())
+	splash_art_texturerect.texture = artworks[chosen_artwork].artwork
+	set_process(artworks[chosen_artwork].artwork is AnimatedTexture)
+	art_by_label.text = tr("Art by: %s") % artworks[chosen_artwork].artist_name
+	art_by_label.tooltip_text = artworks[chosen_artwork].artist_link
+	version_text.modulate = artworks[chosen_artwork].text_modulation
+	# Set an ambient
+	var ambient = GradientTexture2D.new()
+	ambient.gradient = Gradient.new()
+	ambient.width = 100
+	ambient.height = 100
+	var col_a = splash_art_texturerect.texture.get_image().get_pixel(0, 0)
+	var col_b = Color(col_a.r, col_a.g, col_a.b, 0.5)
+	ambient.gradient.set_color(0, col_a)
+	ambient.gradient.set_color(1, col_b)
+	ambient.fill_from = Vector2(0.5, 0.5)
+	ambient.fill = GradientTexture2D.FILL_RADIAL
+	%Ambient.texture = ambient
 
 
 func _on_ArtCredits_pressed() -> void:
-	if artworks[chosen_artwork][2]:
-		OS.shell_open(artworks[chosen_artwork][2])
+	if not artworks[chosen_artwork].artist_link.is_empty():
+		OS.shell_open(artworks[chosen_artwork].artist_link)
 
 
 func _on_ShowOnStartup_toggled(pressed: bool) -> void:
-	if pressed:
-		Global.config_cache.set_value("preferences", "startup", false)
-	else:
-		Global.config_cache.set_value("preferences", "startup", true)
-	Global.config_cache.save("user://cache.ini")
+	Global.config_cache.set_value("preferences", "startup", not pressed)
+	Global.config_cache.save(Global.CONFIG_PATH)
 
 
 func _on_PatreonButton_pressed() -> void:
@@ -106,9 +147,15 @@ func _on_OpenLastBtn_pressed() -> void:
 	Global.top_menu_container.file_menu_id_pressed(2)
 
 
-func _on_ChangeArtBtnLeft_pressed():
+func _on_ChangeArtBtnLeft_pressed() -> void:
 	change_artwork(-1)
 
 
-func _on_ChangeArtBtnRight_pressed():
+func _on_ChangeArtBtnRight_pressed() -> void:
 	change_artwork(1)
+
+
+func _on_visibility_changed() -> void:
+	if not visible:
+		Global.dialog_open(false)
+		set_process(false)

@@ -5,8 +5,20 @@ extends RefCounted
 signal done
 
 
-func generate_image(img: Image, shader: Shader, params: Dictionary, size: Vector2i) -> void:
+func generate_image(
+	img: Image, shader: Shader, params: Dictionary, size: Vector2i, respect_indexed := true
+) -> void:
 	# duplicate shader before modifying code to avoid affecting original resource
+	var resized_width := false
+	var resized_height := false
+	if size.x == 1:
+		size.x = 2
+		img.crop(2, img.get_height())
+		resized_width = true
+	if size.y == 1:
+		size.y = 2
+		img.crop(img.get_width(), 2)
+		resized_height = true
 	shader = shader.duplicate()
 	shader.code = shader.code.replace("unshaded", "unshaded, blend_premul_alpha")
 	var vp := RenderingServer.viewport_create()
@@ -31,7 +43,7 @@ func generate_image(img: Image, shader: Shader, params: Dictionary, size: Vector
 	RenderingServer.canvas_item_set_material(ci_rid, mat_rid)
 	for key in params:
 		var param = params[key]
-		if param is Texture2D:
+		if param is Texture2D or param is Texture2DArray:
 			RenderingServer.material_set_param(mat_rid, key, [param])
 		else:
 			RenderingServer.material_set_param(mat_rid, key, param)
@@ -44,6 +56,12 @@ func generate_image(img: Image, shader: Shader, params: Dictionary, size: Vector
 	RenderingServer.free_rid(ci_rid)
 	RenderingServer.free_rid(mat_rid)
 	RenderingServer.free_rid(texture)
-	viewport_texture.convert(Image.FORMAT_RGBA8)
+	viewport_texture.convert(img.get_format())
 	img.copy_from(viewport_texture)
+	if resized_width:
+		img.crop(img.get_width() - 1, img.get_height())
+	if resized_height:
+		img.crop(img.get_width(), img.get_height() - 1)
+	if img is ImageExtended and respect_indexed:
+		img.convert_rgb_to_indexed()
 	done.emit()

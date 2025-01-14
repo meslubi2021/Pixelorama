@@ -1,4 +1,4 @@
-extends SelectionTool
+extends BaseSelectionTool
 
 var _brush_size := 2
 var _brush := Brushes.get_default_brush()
@@ -40,9 +40,10 @@ func draw_start(pos: Vector2i) -> void:
 		_last_position = pos
 
 
-func draw_move(pos: Vector2i) -> void:
+func draw_move(pos_i: Vector2i) -> void:
 	if selection_node.arrow_key_move:
 		return
+	var pos := _get_stabilized_position(pos_i)
 	pos = snap_position(pos)
 	super.draw_move(pos)
 	if !_move:
@@ -56,75 +57,50 @@ func draw_end(pos: Vector2i) -> void:
 	if selection_node.arrow_key_move:
 		return
 	pos = snap_position(pos)
-	if !_move:
-		_draw_points.append_array(draw_tool(pos))
 	super.draw_end(pos)
 
 
 func draw_preview() -> void:
+	var canvas := Global.canvas.previews_sprite
 	if _last_position != Vector2.INF and !_move:
-		var canvas: Node2D = Global.canvas.previews
-		var pos := canvas.position
-		var canvas_scale := canvas.scale
-		if Global.mirror_view:
-			pos.x = pos.x + Global.current_project.size.x
-			canvas_scale.x = -1
-		canvas.draw_set_transform(pos, canvas.rotation, canvas_scale)
-		var indicator := _fill_bitmap_with_points(_draw_points, Global.current_project.size)
-
-		for line in _create_polylines(indicator):
-			canvas.draw_polyline(PackedVector2Array(line), Color.BLACK)
+		var image := Image.create(
+			Global.current_project.size.x, Global.current_project.size.y, false, Image.FORMAT_LA8
+		)
+		for point in _draw_points:
+			var draw_point := point
+			if Global.mirror_view:  # This fixes previewing in mirror mode
+				draw_point.x = image.get_width() - draw_point.x - 1
+			if Rect2i(Vector2i.ZERO, image.get_size()).has_point(draw_point):
+				image.set_pixelv(draw_point, Color.WHITE)
 
 		# Handle mirroring
-		if Tools.horizontal_mirror:
-			for line in _create_polylines(
-				_fill_bitmap_with_points(
-					mirror_array(_draw_points, true, false), Global.current_project.size
-				)
-			):
-				canvas.draw_polyline(PackedVector2Array(line), Color.BLACK)
-			if Tools.vertical_mirror:
-				for line in _create_polylines(
-					_fill_bitmap_with_points(
-						mirror_array(_draw_points, true, true), Global.current_project.size
-					)
-				):
-					canvas.draw_polyline(PackedVector2Array(line), Color.BLACK)
-		if Tools.vertical_mirror:
-			for line in _create_polylines(
-				_fill_bitmap_with_points(
-					mirror_array(_draw_points, false, true), Global.current_project.size
-				)
-			):
-				canvas.draw_polyline(PackedVector2Array(line), Color.BLACK)
-
-		canvas.draw_set_transform(canvas.position, canvas.rotation, canvas.scale)
+		for point in mirror_array(_draw_points):
+			var draw_point := point
+			if Global.mirror_view:  # This fixes previewing in mirror mode
+				draw_point.x = image.get_width() - draw_point.x - 1
+			if Rect2i(Vector2i.ZERO, image.get_size()).has_point(draw_point):
+				image.set_pixelv(draw_point, Color.WHITE)
+		var texture := ImageTexture.create_from_image(image)
+		canvas.texture = texture
 
 
 func apply_selection(pos: Vector2i) -> void:
 	super.apply_selection(pos)
 	var project := Global.current_project
 	var cleared := false
+	var previous_selection_map := SelectionMap.new()  # Used for intersect
+	previous_selection_map.copy_from(project.selection_map)
 	if !_add and !_subtract and !_intersect:
 		cleared = true
 		Global.canvas.selection.clear_selection()
 	# This is paint selection so we've done >= 1 nstead of > 1
 	if _draw_points.size() >= 1:
-		var selection_map_copy := SelectionMap.new()
-		selection_map_copy.copy_from(project.selection_map)
 		if _intersect:
-			selection_map_copy.clear()
-		paint_selection(selection_map_copy, _draw_points)
-
+			project.selection_map.clear()
+		paint_selection(project, previous_selection_map, _draw_points)
 		# Handle mirroring
-		if Tools.horizontal_mirror:
-			paint_selection(selection_map_copy, mirror_array(_draw_points, true, false))
-			if Tools.vertical_mirror:
-				paint_selection(selection_map_copy, mirror_array(_draw_points, true, true))
-		if Tools.vertical_mirror:
-			paint_selection(selection_map_copy, mirror_array(_draw_points, false, true))
-
-		project.selection_map = selection_map_copy
+		var mirror := mirror_array(_draw_points)
+		paint_selection(project, previous_selection_map, mirror)
 		Global.canvas.selection.big_bounding_rectangle = project.selection_map.get_used_rect()
 	else:
 		if !cleared:
@@ -133,19 +109,30 @@ func apply_selection(pos: Vector2i) -> void:
 	Global.canvas.selection.commit_undo("Select", undo_data)
 	_draw_points.clear()
 	_last_position = Vector2.INF
+	Global.canvas.previews_sprite.texture = null
 
 
-func paint_selection(selection_map: SelectionMap, points: Array[Vector2i]) -> void:
-	var project := Global.current_project
+func paint_selection(
+	project: Project, previous_selection_map: SelectionMap, points: Array[Vector2i]
+) -> void:
+	var selection_map := project.selection_map
 	var selection_size := selection_map.get_size()
 	for point in points:
 		if point.x < 0 or point.y < 0 or point.x >= selection_size.x or point.y >= selection_size.y:
 			continue
 		if _intersect:
-			if project.selection_map.is_pixel_selected(point):
-				selection_map.select_pixel(point, true)
+			if previous_selection_map.is_pixel_selected(point):
+				select_pixel(point, project, true)
 		else:
-			selection_map.select_pixel(point, !_subtract)
+			select_pixel(point, project, !_subtract)
+
+
+func select_pixel(point: Vector2i, project: Project, select: bool) -> void:
+	if Tools.is_placing_tiles():
+		var tilemap := project.get_current_cel() as CelTileMap
+		var cell_position := tilemap.get_cell_position(point)
+		select_tilemap_cell(tilemap, cell_position, project.selection_map, select)
+	project.selection_map.select_pixel(point, select)
 
 
 # Bresenham's Algorithm
@@ -168,22 +155,6 @@ func append_gap(start: Vector2i, end: Vector2i) -> void:
 			err += dx
 			y += sy
 		_draw_points.append_array(draw_tool(Vector2i(x, y)))
-
-
-func mirror_array(array: Array[Vector2i], h: bool, v: bool) -> Array[Vector2i]:
-	var new_array: Array[Vector2i] = []
-	var project := Global.current_project
-	for point in array:
-		if h and v:
-			new_array.append(
-				Vector2i(project.x_symmetry_point - point.x, project.y_symmetry_point - point.y)
-			)
-		elif h:
-			new_array.append(Vector2i(project.x_symmetry_point - point.x, point.y))
-		elif v:
-			new_array.append(Vector2i(point.x, project.y_symmetry_point - point.y))
-
-	return new_array
 
 
 func draw_tool(pos: Vector2i) -> Array[Vector2i]:
@@ -285,7 +256,7 @@ func _on_BrushType_pressed() -> void:
 	for child in categories.get_children():
 		if child is GridContainer:
 			child.columns = columns
-	Global.brushes_popup.popup(Rect2(pop_position, Vector2(size_x, size_y)))
+	Global.brushes_popup.popup_on_parent(Rect2(pop_position, Vector2(size_x, size_y)))
 
 
 func _on_Brush_selected(brush: Brushes.Brush) -> void:

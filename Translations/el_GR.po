@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
-"PO-Revision-Date: 2023-08-29 12:29\n"
+"PO-Revision-Date: 2024-11-15 18:59\n"
 
 msgid "OK"
 msgstr "Εντάξει"
@@ -93,8 +93,17 @@ msgstr "Αποθήκευση..."
 msgid "Save as..."
 msgstr "Αποθήκευση ως..."
 
-msgid "Use ZSTD Compression"
-msgstr "Χρήση συμπίεσης ZSTD"
+#. Checkbox found in the Save project dialog. If enabled, the final blended images are being stored also in the pxo, for each frame.
+msgid "Include blended images"
+msgstr "Συμπερίληψη αναμεμειγμένων εικόνων"
+
+#. Hint tooltip of the "Include blended images" checkbox found in the Save project dialog.
+msgid "If enabled, the final blended images are also being stored in the pxo, for each frame.\n"
+"This makes the pxo file larger and is useful for importing by third-party software\n"
+"or CLI exporting. Loading pxo files in Pixelorama does not need this option to be enabled."
+msgstr "Αν είναι ενεργοποιημένο, οι τελικές αναμεμειγμένες εικόνες αποθηκεύονται επίσης στο pxo, για κάθε καρέ.\n"
+"Αυτό κάνει το αρχείο pxo μεγαλύτερο και είναι χρήσιμο για την εισαγωγή από λογισμικό τρίτων\n"
+"ή για την εξαγωγή μέσω CLI. Η φόρτωση αρχείων pxo στο Pixelorama δεν χρειάζεται αυτή την επιλογή να είναι ενεργοποιημένη."
 
 msgid "Import"
 msgstr "Εισαγωγή"
@@ -141,6 +150,13 @@ msgstr "Επιτόπια επικόλληση"
 msgid "Delete"
 msgstr "Διαγραφή"
 
+msgid "Delete Permanently"
+msgstr "Οριστική διαγραφή"
+
+#. Found when requesting to delete a palette or an extension. Refers to when you move something to recycle bin.
+msgid "Move to Trash"
+msgstr "Μετακίνηση στον κάδο απορριμμάτων"
+
 msgid "New Brush"
 msgstr "Νέο πινέλο"
 
@@ -153,8 +169,13 @@ msgstr "Εικονοστοιχεία"
 msgid "Percentage"
 msgstr "Ποσοστό"
 
-msgid "Crop Image"
-msgstr "Περικοπή"
+#. Found in the image menu. Sets the size of the project to be the same as the size of the active selection.
+msgid "Crop to Selection"
+msgstr "Περικοπή στην επιλογή"
+
+#. Found in the image menu. Automatically trims out all the transparent pixels, making the image smaller.
+msgid "Crop to Content"
+msgstr "Περικοπή στο περιεχόμενο"
 
 msgid "Resize Canvas"
 msgstr "Αλλαγή μεγέθους καμβά"
@@ -171,7 +192,7 @@ msgstr "Αναδίπλωση:"
 
 #. Found in the menu that appears when you right click a frame button. Center is a verb, it is used to place the content of the frame to the center of the canvas.
 msgid "Center Frames"
-msgstr "Κεντράρισμα Καρέ"
+msgstr "Κεντράρισμα καρέ"
 
 msgid "Rotate Image"
 msgstr "Περιστροφή εικόνας"
@@ -197,6 +218,43 @@ msgstr "Εκκαθάριση"
 msgid "Invert"
 msgstr "Αντιστροφή"
 
+msgid "Modify"
+msgstr "Τροποποίηση"
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users expand the active selection.
+msgid "Expand"
+msgstr "Επέκταση"
+
+#. Title of a window that lets users expand the active selection.
+msgid "Expand Selection"
+msgstr "Επέκταση επιλογής"
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users shrink the active selection.
+msgid "Shrink"
+msgstr "Συρρίκνωση"
+
+#. Title of a window that lets users shrink the active selection.
+msgid "Shrink Selection"
+msgstr "Συρρίκνωση επιλογής"
+
+#. Found under the Select menu, in the Modify submenu. When selected, it shows a window that lets users create a border of the active selection.
+msgid "Border"
+msgstr "Περίγραμμα"
+
+#. Title of a window that lets users create a border of the active selection.
+msgid "Border Selection"
+msgstr "Περίγραμμα επιλογής"
+
+#. Refers to a diamond-like shape.
+msgid "Diamond"
+msgstr "Ρόμβος"
+
+msgid "Circle"
+msgstr "Κύκλος"
+
+msgid "Square"
+msgstr "Τετράγωνο"
+
 msgid "Grayscale View"
 msgstr "Προβολή σε κλίμακα γκρι"
 
@@ -212,26 +270,27 @@ msgstr "Κάθετη αναστροφή"
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
+#. An option in the View menu. When selected, the canvas is being placed on the center of the screen.
+msgid "Center Canvas"
+msgstr "Κεντράρισμα Καμβά"
+
 msgid "Tile Mode"
 msgstr "Λειτουργία μοτίβου"
 
 msgid "Tile Mode Offsets"
 msgstr "Μετατόπιση λειτουργίας μοτίβου"
 
-msgid "X-basis x:"
-msgstr "Χ-βάση x:"
+#. Found under "Tile Mode Offsets". Basis is a linear algebra term. https://en.wikipedia.org/wiki/Basis_(linear_algebra)
+msgid "X-basis:"
+msgstr "Βάση Χ:"
 
-msgid "X-basis y:"
-msgstr "Χ-βάση y:"
+#. Found under "Tile Mode Offsets". Basis is a linear algebra term. https://en.wikipedia.org/wiki/Basis_(linear_algebra)
+msgid "Y-basis:"
+msgstr "Βάση Υ:"
 
-msgid "Y-basis x:"
-msgstr "Y-βάση x:"
-
-msgid "Y-basis y:"
-msgstr "Y-βάση y:"
-
-msgid "Tile Mask"
-msgstr "Μάσκα μοτίβου"
+#. Found under "Tile Mode Offsets". It's a button that when pressed, enables masking for tile mode. Masking essentially limits drawing to the visible pixels of the image, thus preventing from drawing on transparent pixels.
+msgid "Masking:"
+msgstr "Μάσκα:"
 
 msgid "Reset"
 msgstr "Επαναφορά"
@@ -281,8 +340,18 @@ msgstr "Προσθήκη"
 msgid "Add Layout"
 msgstr "Προσθήκη διάταξης"
 
-msgid "Edit Layout"
-msgstr "Επεξεργασία διάταξης"
+msgid "Copy from"
+msgstr "Αντιγραφή από"
+
+msgid "Rename"
+msgstr "Μετονομασία"
+
+msgid "Rename Layout"
+msgstr "Μετονομασία διάταξης"
+
+#. Refers to the current layout of the user interface.
+msgid "Current layout"
+msgstr "Τρέχουσα διάταξη"
 
 msgid "Are you sure you want to delete this layout?"
 msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν τη διάταξη;"
@@ -314,6 +383,10 @@ msgstr "Εμφάνιση οδηγών"
 #. Found under the View menu.
 msgid "Show Mouse Guides"
 msgstr "Εμφάνιση οδηγών ποντικιού"
+
+#. Found under the View menu. When enabled, non-destructive layer effects will be visible on the canvas.
+msgid "Display Layer Effects"
+msgstr "Εμφάνιση εφέ στρώσης"
 
 #. Found under the View menu.
 msgid "Snap To"
@@ -525,6 +598,10 @@ msgstr "Περιήγηση"
 msgid "Resize:"
 msgstr "Αλλαγή μεγέθους:"
 
+#. Found in the export dialog, when exporting a jpeg file. Refers to the quality of the exported file.
+msgid "Quality:"
+msgstr "Ποιότητα:"
+
 msgid "Cancel Export"
 msgstr "Ακύρωση Εξαγωγής"
 
@@ -591,12 +668,38 @@ msgstr "Σειρές"
 msgid "Rows:"
 msgstr "Σειρές:"
 
+#. Found in the export dialog, in the Spritesheet tab. An orientation option that splits the spritesheet by animation tags. Each tag creates a new column.
+msgid "Tags by column"
+msgstr "Ετικέτες ανά στήλη"
+
+#. Found in the export dialog, in the Spritesheet tab. An orientation option that splits the spritesheet by animation tags. Each tag creates a new row.
+msgid "Tags by row"
+msgstr "Ετικέτες ανά γραμμή"
+
 #. Found in the export dialog. It is a label that says the dimensions (widthxheight) of the exported image(s).
 msgid "Export dimensions:"
 msgstr "Διαστάσεις εξαγωγής:"
 
+msgid "Save a File"
+msgstr "Αποθήκευση αρχείου"
+
+msgid "Go to previous folder."
+msgstr "Μετάβαση στον προηγούμενο φάκελο."
+
+msgid "Go to next folder."
+msgstr "Μετάβαση στον επόμενο φάκελο."
+
+msgid "Go to parent folder."
+msgstr "Μετάβαση στον γονικό φάκελο."
+
 msgid "Path:"
 msgstr "Διαδρομή:"
+
+msgid "Refresh files."
+msgstr "Ανανέωση αρχείων."
+
+msgid "Toggle the visibility of hidden files."
+msgstr "Εναλλαγή ορατότητας των κρυφών αρχείων."
 
 msgid "Directories & Files:"
 msgstr "Φάκελοι & Αρχεία:"
@@ -606,6 +709,54 @@ msgstr "Δημιουργία Φακέλου"
 
 msgid "File:"
 msgstr "Αρχείο:"
+
+#. Found in "Open" and "Save" file dialogs. Searches all file types.
+msgid "All Files"
+msgstr "Όλα τα αρχεία"
+
+#. Found in the "Open" file dialog. Searches all file types supported by Pixelorama.
+msgid "All Recognized"
+msgstr "Όλα τα αναγνωρισμένα"
+
+#. Found in "Open" and "Save" file dialogs. Searches Pixelorama Project files only (.pxo).
+msgid "Pixelorama Project"
+msgstr "Έργο Pixelorama"
+
+#. Found in the "Open" file dialog. Searches PNG files only. (Note that PNG is a file type and should remain untranslated)
+msgid "PNG Image"
+msgstr "Εικόνα PNG"
+
+#. Found in the "Open" file dialog. Searches BMP files only. (Note that BMP is a file type and should remain untranslated)
+msgid "BMP Image"
+msgstr "Εικόνα BMP"
+
+#. Found in the "Open" file dialog. Searches "Radiance HDR" files only. (Note that "Radiance HDR" is a file type and is better untranslated)
+msgid "Radiance HDR Image"
+msgstr "Εικόνα Radiance HDR"
+
+#. Found in the "Open" file dialog. Searches JPEG files only. (Note that JPEG is a file type and should remain untranslated)
+msgid "JPEG Image"
+msgstr "Εικόνα JPEG"
+
+#. Found in the "Open" file dialog. Searches SVG files only. (Note that SVG is a file type and should remain untranslated)
+msgid "SVG Image"
+msgstr "Εικόνα SVG"
+
+#. Found in the "Open" file dialog. Searches TGA files only. (Note that TGA is a file type and should remain untranslated)
+msgid "TGA Image"
+msgstr "Εικόνα TGA"
+
+#. Found in the "Open" file dialog. Searches WebP files only. (Note that WebP is a file type and should remain untranslated)
+msgid "WebP Image"
+msgstr "Εικόνα WebP"
+
+#. Found in the "Open" file dialog. Searches Pixelorama palette files only (.json).
+msgid "Pixelorama palette"
+msgstr "Παλέτα Pixelorama"
+
+#. Found in the "Open" file dialog. Searches GIMP palette files only (.gpl). (Note that GIMP is a software and should remain untranslated)
+msgid "GIMP palette"
+msgstr "Παλέτα GIMP"
 
 #. Found in the export dialog. It is a button that when pressed, shows more options.
 msgid "Advanced options"
@@ -628,6 +779,14 @@ msgstr "Τριγραμμική"
 
 msgid "Constant"
 msgstr "Σταθερή"
+
+#. Refers to https://en.wikipedia.org/wiki/Color_space
+msgid "Color space:"
+msgstr "Χρωματικός χώρος:"
+
+#. A type of color space.
+msgid "Linear sRGB"
+msgstr "Γραμμικό sRGB"
 
 msgid "General"
 msgstr "Γενικά"
@@ -723,8 +882,32 @@ msgstr "Γλώσσα Συστήματος"
 msgid "Display scale:"
 msgstr "Κλίμακα εμφάνισης:"
 
+#. Refers to the font of a text.
+msgid "Font:"
+msgstr "Γραμματοσειρά:"
+
+#. Found in the preferences, under the interface section. Allows users to set the size of the font, ie the text.
+msgid "Font size:"
+msgstr "Μέγεθος γραμματοσειράς:"
+
 msgid "Dim interface on dialog popup"
 msgstr "Σκοτείνιασμα περιβάλλοντος όταν εμφανίζεται αναδυόμενο παράθυρο"
+
+#. Found in the preferences, under the interface section. When this setting is enabled, the native file dialogs of the operating system are being used, instead of Pixelorama's custom ones.
+msgid "Use native file dialogs"
+msgstr "Χρήση εγγενών παραθύρων αρχείων"
+
+#. Found in the preferences, tooltip of the "Use native file dialogs" option.
+msgid "When this setting is enabled, the native file dialogs of the operating system are being used, instead of Pixelorama's custom ones."
+msgstr "Όταν αυτή η ρύθμιση είναι ενεργοποιημένη, χρησιμοποιούνται τα εγγενή παράθυρα αρχείων του λειτουργικού συστήματος, αντί των παραθύρων του Pixelorama."
+
+#. Found in the preferences, under the interface section. When this setting is enabled, Pixelorama's subwindows will be embedded in the main window, otherwise each dialog will be its own separate window.
+msgid "Single window mode"
+msgstr "Λειτουργία ενός παραθύρου"
+
+#. Found in the preferences, tooltip of the "Single window mode" option.
+msgid "When this setting is enabled, Pixelorama's subwindows will be embedded in the main window, otherwise each dialog will be its own separate window."
+msgstr "Όταν αυτή η ρύθμιση είναι ενεργοποιημένη, τα υποπαράθυρα του Pixelorama θα ενσωματωθούν στο κύριο παράθυρο, αλλιώς κάθε παράθυρο θα είναι ξεχωριστό."
 
 msgid "Dark"
 msgstr "Σκούρο"
@@ -743,6 +926,10 @@ msgstr "Φωτεινό"
 
 msgid "Purple"
 msgstr "Μωβ"
+
+#. A theme. Rose refers to the color rose.
+msgid "Rose"
+msgstr "Τριανταφυλλί"
 
 msgid "Theme"
 msgstr "Θέμα"
@@ -764,6 +951,16 @@ msgstr "Χρώμα υποβάθρου από:"
 
 msgid "Background color:"
 msgstr "Χρώμα υποβάθρου:"
+
+#. Found in the preferences, under the Tools category.
+msgid "Share options between the left and the right tools"
+msgstr "Κοινή χρήση επιλογών μεταξύ αριστερών και δεξιών εργαλείων"
+
+#. Found in the preferences, under the Tools category. Tooltip of the "Share options between the left and the right tools" preference.
+msgid "If this is enabled, options will be synced between the left and the right tool.\n"
+"For example, both tools will share the same brush size, and changing it on one tool will instantly change on the other."
+msgstr "Αν αυτό είναι ενεργοποιημένο, οι επιλογές θα συγχρονίζονται μεταξύ του αριστερού και του δεξιού εργαλείου.\n"
+"Για παράδειγμα, και τα δύο εργαλεία θα μοιράζονται το ίδιο μέγεθος βούρτσας, και η αλλαγή του σε ένα εργαλείο θα αλλάξει αμέσως και το άλλο."
 
 msgid "Left tool color:"
 msgstr "Χρώμα αριστερού εργαλείου:"
@@ -813,12 +1010,15 @@ msgstr "Τροποποίηση Μπλε Καναλιού"
 msgid "Modify Alpha Channel"
 msgstr "Τροποποίηση Καναλιού Διαφάνειας"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Desaturation"
 msgstr "Αποκορεσμός"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Outline"
 msgstr "Περίγραμμα"
 
+#. An image effect. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
 msgid "Drop Shadow"
 msgstr "Πίπτουσα σκιά"
 
@@ -831,8 +1031,25 @@ msgstr "Μετατόπιση Y:"
 msgid "Shadow color:"
 msgstr "Χρώμα σκιάς:"
 
-msgid "Adjust Hue/Saturation/Value"
-msgstr "Ρύθμιση απόχρωσης/κορεσμού/τιμής"
+#. An image effect. https://en.wikipedia.org/wiki/Gaussian_blur
+msgid "Gaussian Blur"
+msgstr "Θόλωση Gauss"
+
+#. The type of the Gaussian blur, an image effect.
+msgid "Blur type:"
+msgstr "Τύπος θόλωσης:"
+
+#. The applied amount of Gaussian blur, an image effect.
+msgid "Blur amount:"
+msgstr "Ποσότητα θόλωσης:"
+
+#. The applied radius of Gaussian blur, an image effect.
+msgid "Blur radius:"
+msgstr "Ακτίνα θόλωσης:"
+
+#. The applied direction of Gaussian blur, an image effect.
+msgid "Blur direction:"
+msgstr "Κατεύθυνση θόλωσης:"
 
 msgid "Gradient"
 msgstr "Διαβάθμιση"
@@ -888,23 +1105,63 @@ msgstr "Κέντρο:"
 msgid "Dithering pattern:"
 msgstr "Μοτίβο χρωματικής αντιπαράθεσης:"
 
-msgid "Adjust HSV"
-msgstr "Ρύθμιση HSV"
-
 msgid "Type:"
 msgstr "Είδος:"
 
 msgid "Angle:"
 msgstr "Γωνία:"
 
+#. An image effect. Adjusts the hue, saturation and value of the colors of an image. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Adjust Hue/Saturation/Value"
+msgstr "Ρύθμιση απόχρωσης/κορεσμού/τιμής"
+
+#. HSV stands for Hue, Saturation & Value.
+msgid "Adjust HSV"
+msgstr "Ρύθμιση HSV"
+
+#. Refers to the hue of the colors of an image.
 msgid "Hue:"
 msgstr "Απόχρωση:"
 
+#. Refers to the saturation of the colors of an image.
 msgid "Saturation:"
 msgstr "Κορεσμός:"
 
+#. Refers to the value (as in HSV) of the colors of an image.
 msgid "Value:"
 msgstr "Τιμή:"
+
+#. An image effect. Adjusts the brightness and contrast of the colors of an image.
+msgid "Adjust Brightness/Contrast"
+msgstr "Ρύθμιση φωτεινότητας/αντίθεσης"
+
+#. Refers to the brightness of the colors of an image.
+msgid "Brightness:"
+msgstr "Φωτεινότητα:"
+
+#. Refers to the contrast of the colors of an image.
+msgid "Contrast:"
+msgstr "Αντίθεση:"
+
+#. Refers to the red value of the colors of an image.
+msgid "Red value:"
+msgstr "Κόκκινη τιμή:"
+
+#. Refers to the green value of the colors of an image.
+msgid "Green value:"
+msgstr "Πράσινη τιμή:"
+
+#. Refers to the blue value of the colors of an image.
+msgid "Blue value:"
+msgstr "Μπλε τιμή:"
+
+#. Refers to a color that tints an image.
+msgid "Tint color:"
+msgstr "Απόχρωση:"
+
+#. Refers to the factor (how much) a color tints an image.
+msgid "Tint effect factor:"
+msgstr "Παράγοντας απόχρωσης:"
 
 msgid "Apply"
 msgstr "Εφαρμογή"
@@ -923,6 +1180,14 @@ msgstr "Χρώματα:"
 
 msgid "Steps:"
 msgstr "Βαθμίδες:"
+
+#. An image effect. It maps the color of the input to the nearest color in the selected palette. Useful for limiting color in pixel art and for artistic effects. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Palettize"
+msgstr "Παλετοποίηση"
+
+#. An image effect. It makes the input image pixelated. See Pixelorama's documentation page for more information: https://www.oramainteractive.com/Pixelorama-Docs/user_manual/image_effects
+msgid "Pixelize"
+msgstr "Δημιουργία εικονοστοιχείων"
 
 #. An image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
 msgid "Posterize"
@@ -945,14 +1210,19 @@ msgstr "Ηλεκτρονική τεκμηρίωση"
 msgid "Issue Tracker"
 msgstr "Καταγραφές προβλημάτων"
 
-msgid "Open Logs Folder"
-msgstr "Άνοιγμα φακέλου αρχείων καταγραφής"
+#. Found under the Help menu. When selected, it opens the folder where the application's data are being saved.
+msgid "Open Editor Data Folder"
+msgstr "Άνοιγμα φακέλου δεδομένων προγράμματος"
 
 msgid "Changelog"
 msgstr "Καταγραφές αλλαγών"
 
 msgid "About Pixelorama"
 msgstr "Σχετικά με το Pixelorama"
+
+#. Found under the Help menu. When clicked, it opens the URL of Orama Interactive's patreon page.
+msgid "Support Pixelorama's Development"
+msgstr "Υποστηρίξτε την ανάπτυξη του Pixelorama"
 
 msgid "Pixelorama - Pixelate your dreams!"
 msgstr "Pixelorama - Pixelate your dreams!"
@@ -966,8 +1236,9 @@ msgstr "©2019-παρόν από Orama Interactive και συνεισφέρον
 msgid "Website"
 msgstr "Ιστοσελίδα"
 
-msgid "GitHub Repo"
-msgstr "GitHub Αποθετήριο"
+#. Found in the About dialog. A button that, when you click it, it opens the URL of Pixelorama's source code.
+msgid "Source Code"
+msgstr "Πηγαίος κώδικας"
 
 msgid "Donate"
 msgstr "Κάντε μια δωρεά"
@@ -1077,17 +1348,17 @@ msgstr "Ολλανδικά"
 msgid "Belarusian"
 msgstr "Λευκορωσικά"
 
-msgid "Development Team"
-msgstr "Ομάδα Ανάπτυξης"
+#. Found in the About dialog.
+msgid "Lead Developer"
+msgstr "Επικεφαλής προγραμματιστής"
 
-msgid "Lead Programmer"
-msgstr "Επικεφαλής Προγραμματιστής"
-
+#. Found in the About dialog.
 msgid "UI Designer"
 msgstr "Σχεδιαστής UI"
 
-msgid "GitHub Contributors"
-msgstr "Συνεισφέροντες στο GitHub"
+#. Found in the About dialog. Refers to the people who have contributed code to the project.
+msgid "Authors"
+msgstr "Δημιουργοί"
 
 msgid "Art by: %s"
 msgstr "Ζωγραφιά από: %s"
@@ -1113,8 +1384,8 @@ msgstr "Έχετε μη αποθηκευμένες αλλαγές. Εάν προ
 msgid "Save before exiting?"
 msgstr "Αποθήκευση πριν την έξοδο;"
 
-msgid "You have unsaved progress. How do you wish to proceed?"
-msgstr "Έχετε μη αποθηκευμένη πρόοδο. Πώς θέλετε να συνεχίσετε;"
+msgid "Project %s has unsaved progress. How do you wish to proceed?"
+msgstr "Το έργο %s έχει μη αποθηκευμένη πρόοδο. Πώς θέλετε να προχωρήσετε;"
 
 msgid "Save & Exit"
 msgstr "Αποθήκευση & έξοδος"
@@ -1166,6 +1437,13 @@ msgstr "Ελεύθερη επιλογή\n\n"
 "%s για το αριστερό κουμπί ποντικιού\n"
 "%s για το δεξί κουμπί ποντικιού"
 
+msgid "Select by Drawing\n\n"
+"%s for left mouse button\n"
+"%s for right mouse button"
+msgstr "Επιλογή κατά χρώμα\n\n"
+"%s για το αριστερό κουμπί ποντικιού\n"
+"%s για το δεξί κουμπί ποντικιού"
+
 msgid "Move\n\n"
 "%s for left mouse button\n"
 "%s for right mouse button"
@@ -1195,6 +1473,11 @@ msgstr "Επιλογέας χρωμάτων\n\n"
 "%s για αριστερό πλήκτρο του ποντικιού\n"
 "%s για δεξί πλήκτρο του ποντικιού\n\n"
 "Επιλέξτε ένα χρώμα από ένα εικονοστοιχείο του αντικειμένου"
+
+msgid "Crop\n\n"
+"Resize the canvas"
+msgstr "Περικοπή\n\n"
+"Αλλαγή μεγέθους του καμβά"
 
 msgid "Pencil\n\n"
 "%s for left mouse button\n"
@@ -1241,6 +1524,21 @@ msgstr "Εργαλείο γραμμής\n\n"
 "Κρατήστε το %s για να κεντράρετε το σχήμα στην αρχή του κλικ\n"
 "Κρατήστε το %s για να μετακινήσετε την προέλευση του σχήματος"
 
+msgid "Curve Tool\n\n"
+"%s for left mouse button\n"
+"%s for right mouse button\n\n"
+"Draws bezier curves\n"
+"Press %s/%s to add new points\n"
+"Press and drag to control the curvature\n"
+"Press %s to remove the last added point"
+msgstr "Εργαλείο καμπύλης\n\n"
+"%s για το αριστερό πλήκτρο του ποντικιού\n"
+"%s για το δεξί πλήκτρο του ποντικιού\n\n"
+"Ζωγραφίζει καμπύλες μπεζιέ\n"
+"Πατήστε το %s/%s για να προσθέσετε νέα σημεία\n"
+"Πατήστε και σύρετε για να ελέγξετε την καμπυλότητα\n"
+"Πατήστε το %s για να διαγράψετε το τελευταίο σημείο"
+
 msgid "Rectangle Tool\n\n"
 "%s for left mouse button\n"
 "%s for right mouse button\n\n"
@@ -1279,13 +1577,48 @@ msgstr "Επιλέξτε ένα χρώμα για το αριστερό εργα
 msgid "Choose a color for the right tool"
 msgstr "Επιλέξτε ένα χρώμα για το δεξί εργαλείο"
 
-msgid "Switch left and right colors\n"
-"(%s)"
-msgstr "Εναλλαγή μεταξύ αριστερού και δεξιού χρώματος\n"
-"(%s)"
+#. Tooltip of the switch colors button found in the color picker panel.
+msgid "Switch left and right colors."
+msgstr "Εναλλαγή μεταξύ αριστερού και δεξιού χρώματος."
+
+#. Tooltip of the average color button, found in the color picker panel. Shows the average color between the two selected.
+msgid "Average Color:"
+msgstr "Μέσος όρος χρώματος:"
 
 msgid "Reset the colors to their default state (black for left, white for right)"
 msgstr "Επαναφορά των χρωμάτων στην αρχική τους κατάσταση (μαύρο για το αριστερό, άσπρο για το δεξί)"
+
+#. Tooltip of the screen color picker button found in the color picker panel.
+msgid "Pick a color from the screen."
+msgstr "Επιλέξτε ένα χρώμα από την οθόνη."
+
+#. Tooltip of the color text field found in the color picker panel that lets users change the color by hex code or english name ("red" cannot be translated).
+msgid "Enter a hex code (\"#ff0000\") or named color (\"red\")."
+msgstr "Εισάγετε έναν δεκαεξαδικό κωδικό (\"#ff0000\") ή χρώμα με όνομα (\"red\")."
+
+#. Tooltip of the button found in the color picker panel that lets users change the shape of the color picker.
+msgid "Select a picker shape."
+msgstr "Επιλέξτε ένα σχήμα επιλογέα."
+
+#. Refers to color-related options such as sliders that set color channel values like R, G, B and A.
+msgid "Color options"
+msgstr "Επιλογές χρώματος"
+
+#. Tooltip of the button with three dots found under color options in the color picker panel that lets users change the mode of the color picker/sliders.
+msgid "Select a picker mode."
+msgstr "Επιλέξτε μια λειτουργία επιλογής."
+
+#. Checkbox found in the menu of the button with three dots found under color options in the color picker panel.
+msgid "Colorized Sliders"
+msgstr "Χρωματιστά sliders"
+
+#. Shows saved colors in certain color picker menus.
+msgid "Swatches"
+msgstr "Swatches"
+
+#. Found under color options in the color picker panel.
+msgid "Recent Colors"
+msgstr "Πρόσφατα χρώματα"
 
 msgid "Left tool"
 msgstr "Αριστερό εργαλείο"
@@ -1465,14 +1798,36 @@ msgstr "Μόνο η προσαρμοσμένη προεπιλογή μπορεί
 msgid "Set application FPS limit:"
 msgstr "Ορισμός ορίου FPS εφαρμογής:"
 
-msgid "Pause application when it loses focus"
-msgstr "Παύση εφαρμογής όταν χάνει την εστίαση"
-
 msgid "Sets the limit of the application's frames per second. The lower the number, the lower the CPU usage, but the application gets slower, choppier and unresponsive. 0 means that there is no limit."
 msgstr "Ορίζει το όριο των καρέ της εφαρμογής ανά δευτερόλεπτο. Όσο μικρότερος είναι ο αριθμός, τόσο χαμηλότερη είναι η χρήση της CPU, αλλά η εφαρμογή γίνεται πιο αργή, ασταθής και λιγότερο ανταποκρινόμενη. 0 σημαίνει ότι δεν υπάρχει όριο."
 
+#. Found in the Preferences, under the Performance section. Changes the value of the maximum undo steps projects can use.
+msgid "Max undo steps:"
+msgstr "Μέγιστα βήματα αναίρεσης:"
+
+#. An option found in the preferences, under the Performance section.
+msgid "Pause application when it loses focus"
+msgstr "Παύση εφαρμογής όταν χάνει την εστίαση"
+
+#. Found in the preferences, hint of the "Pause application when it loses focus" option.
 msgid "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 msgstr "Αν είναι ενεργοποιημένο, όταν το παράθυρο της εφαρμογής χάνει την εστίαση του, γίνεται παύση της εφαρμογής. Αυτό βοηθά στη μείωση της χρήσης του επεξεργαστή (CPU) όταν βρίσκεται σε αδράνεια. Η εφαρμογή συνεχίζεται όταν το ποντίκι εισέρχεται στο παράθυρο της."
+
+#. An option found in the preferences, under the Performance section. Refers to the screen being updated (redrawn) continuously.
+msgid "Update continuously"
+msgstr "Συνεχής ανανέωση"
+
+#. Found in the preferences, hint of the "Update continuously" option.
+msgid "If this is toggled on, the application will redraw the screen continuously, even while it's not used. Turning this off helps lower CPU and GPU usage when idle."
+msgstr "Αν είναι ενεργοποιημένο, η εφαρμογή θα ανανεώνει την οθόνη συνεχώς, ακόμα και αν δε χρησιμοποιείται. Η απενεργοποίηση αυτής της λειτουργίας βοηθά στη μείωση της χρήσης CPU και GPU όταν είναι αδρανείς."
+
+#. An option found in the preferences, under the Performance section.
+msgid "Enable window transparency"
+msgstr "Ενεργοποίηση διαφάνειας παραθύρου"
+
+#. Found in the preferences, hint of the "Enable window transparency" option.
+msgid "If enabled, the application window can become transparent. This affects performance, so keep it off if you don't need it."
+msgstr "Αν ενεργοποιηθεί, το παράθυρο της εφαρμογής μπορεί να γίνει διαφανές. Αυτό επηρεάζει τις επιδόσεις, οπότε κρατήστε το απενεργοποιημένο αν δεν το χρειάζεστε."
 
 #. Found in the Preferences, under Drivers. Specifies the renderer/video driver being used.
 msgid "Renderer:"
@@ -1490,6 +1845,7 @@ msgstr "Οδηγός ταμπλέτας:"
 msgid "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
 msgstr "Καθορίζει το πρόγραμμα οδήγησης ταμπλέτας που χρησιμοποιείται στα Windows. Εάν έχετε ενεργοποιημένο το Windows Ink, επιλέξτε winink."
 
+#. Found in the Preferences, under Extensions.
 msgid "Add Extension"
 msgstr "Προσθήκη επέκτασης"
 
@@ -1505,9 +1861,25 @@ msgstr "Απεγκατάσταση"
 msgid "Open Folder"
 msgstr "Άνοιγμα φακέλου"
 
+#. Found in the Preferences, under Extensions. It is a button that, when clicked, opens up the extension explorer which allows users to download extensions from the Internet.
+msgid "Explore Online"
+msgstr "Εξερευνήστε online"
+
+#. Found in the Preferences, under Extensions. This is the text of a confirmation dialog that appears when the user attempts to enable an extension.
+msgid "Are you sure you want to enable this extension? Make sure to only enable extensions from sources that you trust."
+msgstr "Είστε βέβαιοι ότι θέλετε να ενεργοποιήσετε αυτή την επέκταση; Βεβαιωθείτε ότι ενεργοποιείτε επεκτάσεις μόνο από πηγές που εμπιστεύεστε."
+
+#. Found in the Preferences, under Extensions. This is the text of a confirmation dialog that appears when the user attempts to delete an extension.
+msgid "Are you sure you want to delete this extension?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την επέκταση;"
+
 #. Hint tooltip of a button in the Global Tool Settings. "Dynamics" let users affect certain brush parameters, such as their size and alpha, based on the pressure of the tablet pen, the velocity of the mouse or the pen, and more in the future.
 msgid "Dynamics"
 msgstr "Δυναμικές"
+
+#. Found in the Dynamics options menu. A stabilizer is a feature that, when enabled, helps artists create smooth lines as they draw.
+msgid "Stabilizer"
+msgstr "Σταθεροποιητής"
 
 #. Found in the Dynamics options menu. Pressure refers to tablet pen pressure.
 msgid "Pressure"
@@ -1571,6 +1943,15 @@ msgstr "Αντικαθιστά το χρώμα αντί να το συνδυάζ
 msgid "Pixel Perfect"
 msgstr "Pixel Perfect"
 
+msgid "Pixel Perfect\n"
+"Makes lines smooth by removing the extra pixels on the edges"
+msgstr "Pixel Perfect\n"
+"Κάνει τις γραμμές ομαλές αφαιρώντας τα επιπλέον εικονοστοιχεία στα άκρα"
+
+#. A button found in the global tool options. When enabled, the alpha value of the pixels being drawn is locked, meaning that the user can only draw on non-transparent pixels.
+msgid "Lock alpha"
+msgstr "Κλείδωμα διαφάνειας"
+
 msgid "Fill inside"
 msgstr "Εσωτερικό γέμισμα"
 
@@ -1586,16 +1967,15 @@ msgstr "Κενό X:"
 msgid "Gap Y:"
 msgstr "Κενό Y:"
 
-msgid "Pixel Perfect\n"
-"Makes lines smooth by removing the extra pixels on the edges"
-msgstr "Pixel Perfect\n"
-"Κάνει τις γραμμές ομαλές αφαιρώντας τα επιπλέον εικονοστοιχεία στα άκρα"
-
 msgid "Fill Shape"
 msgstr "Γέμισμα Σχήματος"
 
 msgid "Fills the drawn shape with color, instead of drawing a hollow shape"
 msgstr "Γεμίζει το σχεδιασμένο σχήμα με χρώμα, αντί να σχεδιαστεί ένα άδειο σχήμα"
+
+#. Found in the tool options of the Pencil, Eraser and Shading tools. It is a percentage of how dense the brush is. 100% density means that the brush gets completely drawn, anything less leaves gaps inside the brush, acting like a spray tool.
+msgid "Density:"
+msgstr "Πυκνότητα:"
 
 msgid "Brush color from"
 msgstr "Χρώμα πινέλου από"
@@ -1669,6 +2049,9 @@ msgstr "Μεγέθυνση"
 msgid "Zoom out"
 msgstr "Σμίκρυνση"
 
+msgid "Options"
+msgstr "Επιλογές"
+
 msgid "Options:"
 msgstr "Επιλογές:"
 
@@ -1703,11 +2086,19 @@ msgstr "Οριζόντια"
 msgid "Enable horizontal mirrored drawing"
 msgstr "Ενεργοποίηση ζωγραφικής με οριζόντιο κατοπτρισμό"
 
+msgid "Vertical"
+msgstr "Κάθετα"
+
 msgid "Enable vertical mirrored drawing"
 msgstr "Ενεργοποίηση ζωγραφικής με κάθετο κατοπτρισμό"
 
-msgid "Vertical"
-msgstr "Κάθετα"
+#. Found in the global tool options, in the menu that appears next to each mirror button. It affects the position of a symmetry guide.
+msgid "Move to canvas center"
+msgstr "Μετακίνηση στο κέντρο του καμβά"
+
+#. Found in the global tool options, in the menu that appears next to each mirror button. It affects the position of a symmetry guide.
+msgid "Move to view center"
+msgstr "Μετακίνηση στο κέντρο της προβολής"
 
 msgid "Current frame:"
 msgstr "Τρέχον καρέ:"
@@ -1718,38 +2109,26 @@ msgstr "Λειτουργία κίνησης:"
 msgid "Current frame as spritesheet"
 msgstr "Τρέχον πλαίσιο ως φύλλο καρέ"
 
-msgid "Jump to the first frame\n"
-"(%s)"
-msgstr "Μετάβαση στο πρώτο καρέ\n"
-"(%s)"
+msgid "Jump to the first frame"
+msgstr "Μετάβαση στο πρώτο καρέ"
 
-msgid "Go to the previous frame\n"
-"(%s)"
-msgstr "Μετάβαση στο προηγούμενο καρέ\n"
-"(%s)"
+msgid "Go to the previous frame"
+msgstr "Μετάβαση στο προηγούμενο καρέ"
 
-msgid "Play the animation backwards (from end to beginning)\n"
-"(%s)"
-msgstr "Αναπαραγωγή της κίνησης ανάποδα (από το τέλος προς την αρχή)\n"
-"(%s)"
+msgid "Play the animation backwards"
+msgstr "Αναπαραγωγή της κίνησης προς τα πίσω"
 
-msgid "Play the animation forward (from beginning to end)\n"
-"(%s)"
-msgstr "Αναπαραγωγή της κίνησης κανονικά (από την αρχή προς το τέλος)\n"
-"(%s)"
+msgid "Play the animation forward"
+msgstr "Αναπαραγωγή της κίνησης προς τα εμπρός"
 
-msgid "Go to the next frame\n"
-"(%s)"
-msgstr "Μετάβαση στο επόμενο καρέ\n"
-"(%s)"
+msgid "Go to the next frame"
+msgstr "Μετάβαση στο επόμενο καρέ"
 
-msgid "Jump to the last frame\n"
-"(%s)"
-msgstr "Μετάβαση στο τελευταίο καρέ\n"
-"(%s)"
+msgid "Jump to the last frame"
+msgstr "Μετάβαση στο τελευταίο καρέ"
 
-msgid "Onion Skinning settings"
-msgstr "Ρυθμίσεις Onion Skinning"
+msgid "Timeline settings"
+msgstr "Ρυθμίσεις χρονοδιαγράμματος"
 
 msgid "Enable/disable Onion Skinning"
 msgstr "Ενεργοποίηση/απενεργοποίηση Onion Skinning"
@@ -1809,7 +2188,11 @@ msgid "If it's selected, the animation plays only on the frames that have the sa
 msgstr "Αν είναι επιλεγμένο, η κίνηση παίζει μόνο σε καρέ που έχουν την ίδια καρτέλα.\n"
 "Αλλιώς, η κίνηση θα παίζει σε όλα τα καρέ, αγνοώντας τις καρτέλες."
 
-#. Found in the timeline, inside the onion skinning settings. If this is enabled, the past and future frames will have appear tinted.
+#. Found in the timeline, inside the timeline settings. It's a slider that sets the size of the cel buttons in the timeline.
+msgid "Cel size:"
+msgstr "Μέγεθος cel:"
+
+#. Found in the timeline, inside the timeline settings. If this is enabled, the past and future frames will have appear tinted.
 msgid "Color mode"
 msgstr "Λειτουργία χρώματος"
 
@@ -1832,16 +2215,16 @@ msgid "Add a new frame"
 msgstr "Προσθήκη νέου καρέ"
 
 msgid "Remove Frame"
-msgstr "Διαγραφή Καρέ"
+msgstr "Διαγραφή καρέ"
 
 msgid "Clone Frame"
-msgstr "Κλωνοποίηση Καρέ"
+msgstr "Κλωνοποίηση καρέ"
 
 msgid "Move Left"
-msgstr "Μετακίνηση Αριστερά"
+msgstr "Μετακίνηση αριστερά"
 
 msgid "Move Right"
-msgstr "Μετακίνηση Δεξιά"
+msgstr "Μετακίνηση δεξιά"
 
 msgid "Add Frame Tag"
 msgstr "Προσθήκη Ετικέτας Καρέ"
@@ -1852,15 +2235,35 @@ msgstr "Σύνδεση cels με"
 msgid "Unlink Cels"
 msgstr "Αποσύνδεση cels"
 
-msgid "Frame Properties"
-msgstr "Ιδιότητες Καρέ"
+msgid "Properties"
+msgstr "Ιδιότητες"
+
+msgid "Project Properties"
+msgstr "Ιδιότητες έργου"
 
 msgid "Frame properties"
 msgstr "Ιδιότητες καρέ"
 
+msgid "Layer properties"
+msgstr "Ιδιότητες στρώσης"
+
+msgid "Cel properties"
+msgstr "Ιδιότητες cel"
+
+msgid "Tag properties"
+msgstr "Ιδιότητες ετικέτας"
+
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, a new frame tag is added.
+msgid "New Tag"
+msgstr "Νέα ετικέτα"
+
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, it allows users to paste/import tags from other opened projects.
+msgid "Import Tag"
+msgstr "Εισαγωγή ετικέτας"
+
 #. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, the order of the selected frames is being reversed.
 msgid "Reverse Frames"
-msgstr "Αντιστροφή Καρέ"
+msgstr "Αντιστροφή καρέ"
 
 msgid "Layer"
 msgstr "Στρώση"
@@ -1870,6 +2273,10 @@ msgstr "Ομάδα"
 
 msgid "Layers"
 msgstr "Στρώσεις"
+
+#. Found in the layer menu which appears when right clicking on a layer button in the timeline. When enabled, the layer becomes a clipping mask.
+msgid "Clipping mask"
+msgstr "Μάσκα αποκοπής"
 
 #. Hint tooltip of the create new layer button, found on the left side of the timeline.
 msgid "Create a new layer"
@@ -1901,6 +2308,94 @@ msgstr "Κλωνοποίηση της τρέχουσας στρώσης"
 
 msgid "Merge current layer with the one below"
 msgstr "Συγχώνευση της τρέχουσας στρώσης με την από κάτω"
+
+#. Found in the layer's section of the timeline. Refers to layer blend modes, for more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Blend mode:"
+msgstr "Λειτουργία στρώσης:"
+
+#. Found in the layer's section of the timeline, as a blend mode option, only available for group layers. If enabled, group blending is disabled and the group simply acts as a way to organize layers instead of affecting blending.
+msgid "Pass through"
+msgstr "Διέλευση"
+
+#. Adjective, refers to something usual/regular, such as the normal blend mode.
+msgid "Normal"
+msgstr "Κανονικό"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Multiply"
+msgstr "Πολλαπλασιασμός"
+
+# .Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color burn"
+msgstr "Χρωματικό κάψιμο"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Linear burn"
+msgstr "Γραμμικό κάψιμο"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Screen"
+msgstr "Οθόνη"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color dodge"
+msgstr "Χρωματική υπεκφυγή"
+
+#. Found in the layer's section of the timeline, as category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Contrast"
+msgstr "Αντίθεση"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Overlay"
+msgstr "Επικάλυψη"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Soft light"
+msgstr "Ήπιο φως"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Hard light"
+msgstr "Σκληρό φως"
+
+#. Found in the layer's section of the timeline, as a category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Inversion"
+msgstr "Αναστροφή"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Difference"
+msgstr "Διαφορά"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Exclusion"
+msgstr "Αποκλεισμός"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Subtract"
+msgstr "Αφαίρεση"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Divide"
+msgstr "Διαίρεση"
+
+#. Found in the layer's section of the timeline, as a category of blend modes. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Component"
+msgstr "Συστατικό"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Hue"
+msgstr "Απόχρωση"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Saturation"
+msgstr "Κορεσμός"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Color"
+msgstr "Χρώμα"
+
+#. Found in the layer's section of the timeline, as a blend mode option. For more info refer to: https://en.wikipedia.org/wiki/Blend_modes
+msgid "Luminosity"
+msgstr "Φωτεινότητα"
 
 msgid "Opacity:"
 msgstr "Αδιαφάνεια:"
@@ -2039,6 +2534,10 @@ msgstr "Απέτυχε το άνοιγμα του αρχείου. Κωδικός
 msgid "File failed to save. Error code %s"
 msgstr "Απέτυχε η αποθήκευση του αρχείου. Κωδικός σφάλματος %s"
 
+#. Appears when the user attempts to export a project as a video, but the process fails. FFMPEG is the external software used to export videos.
+msgid "Video failed to export. Ensure that FFMPEG is installed correctly."
+msgstr "Αποτυχία εξαγωγής του βίντεο. Βεβαιωθείτε ότι το FFMPEG έχει εγκατασταθεί σωστά."
+
 msgid "File(s) exported"
 msgstr "Έγινε εξαγωγή αρχείων"
 
@@ -2123,6 +2622,26 @@ msgstr "Προεπιλεγμένο γέμισμα με χρώμα:"
 msgid "A default background color of a new image"
 msgstr "Το προεπιλεγμένο χρώμα των καινούριων εικόνων"
 
+#. Found in the preferences, under the Reset category.
+msgid "Reset all options available in the Preferences"
+msgstr "Επαναφορά όλων των επιλογών που βρίσκονται στις προτιμήσεις"
+
+#. Found in the preferences, under the Reset category.
+msgid "Reset timeline options"
+msgstr "Επαναφορά επιλογών χρονοδιαγράμματος"
+
+#. Found in the preferences, under the Reset category.
+msgid "Reset all tool options"
+msgstr "Επαναφορά όλων των επιλογών εργαλείων"
+
+#. Found in the preferences, under the Reset category.
+msgid "Remove all extensions"
+msgstr "Διαγραφή όλων των επεκτάσεων"
+
+#. Found in the preferences, under the Reset category.
+msgid "Clear the recently opened file list"
+msgstr "Εκκαθάριση της λίστας αρχείων που ανοίχθηκαν πρόσφατα"
+
 msgid "Lock aspect ratio"
 msgstr "Κλείδωμα αναλογίας διαστάσεων"
 
@@ -2192,6 +2711,9 @@ msgstr "Εργαλείο σκίασης"
 msgid "Line Tool"
 msgstr "Εργαλείο γραμμής"
 
+msgid "Curve Tool"
+msgstr "Εργαλείο καμπύλης"
+
 msgid "Rectangle Tool"
 msgstr "Ορθογώνιο εργαλείο"
 
@@ -2246,6 +2768,10 @@ msgstr "Ανοίγει το τελευταίο έργο κατά την εκκί
 msgid "Quit confirmation"
 msgstr "Επιβεβαίωση εξόδου"
 
+#. Found in the preferences, under the startup section. Path is a noun and it refers to the location in the device where FFMPEG is located at. FFMPEG is a software name and it should not be translated. See https://en.wikipedia.org/wiki/Path_(computing)
+msgid "FFMPEG path"
+msgstr "Διαδρομή FFMPEG"
+
 msgid "Enable autosave"
 msgstr "Ενεργοποίηση αυτόματης αποθήκευσης"
 
@@ -2254,6 +2780,14 @@ msgstr "Χρονικό διάστημα αυτόματης αποθήκευση�
 
 msgid "minute(s)"
 msgstr "λεπτό(ά)"
+
+#. A setting found in the export dialog. When enabled, a JSON file containing the project's data is also being exported. JSON refers to this https://en.wikipedia.org/wiki/JSON
+msgid "Export JSON data"
+msgstr "Εξαγωγή δεδομένων JSON"
+
+#. A setting found in the export dialog. When enabled, each layer is being exported as a different file, or as different frames if the target format is gif/apng/video.
+msgid "Split layers"
+msgstr "Διαχωρισμός στρώσεων"
 
 #. Found in the export dialog.
 msgid "Include frame tags in the file name"
@@ -2274,6 +2808,22 @@ msgstr "Διαχωριστικοί χαρακτήρες:"
 #. Found in the export dialog, as a hint tooltip of the separator character(s) text field.
 msgid "The character(s) that separate the file name and the frame number"
 msgstr "Οι χαρακτήρες που διαχωρίζουν το όνομα του αρχείου και τον αριθμό του καρέ"
+
+#. Found in the export dialog. It is an option that removes the transparent area around non-transparent pixels of the exported images.
+msgid "Trim images"
+msgstr "Περικοπή εικόνων"
+
+#. Found in the export dialog. Tooltip of the "trim images" option.
+msgid "Trims the exported images to their visible portion, considering each pixel with a non-zero alpha channel as visible."
+msgstr "Περικοπή των εξαγόμενων εικόνων στο ορατό τμήμα τους, θεωρώντας κάθε pixel με ένα μη μηδενικό alpha κανάλι ως ορατό."
+
+#. Found in the export dialog. It is an option that allows users to only export the portions of the images that are within the selected area.
+msgid "Clip image content to selection"
+msgstr "Αποκοπή περιεχομένου εικόνας στην επιλογή"
+
+#. Found in the export dialog. Tooltip of the "clip image content to selection" option.
+msgid "Only export content that is within the bounds of a selected area."
+msgstr "Εξαγωγή μόνο περιεχομένου που βρίσκεται εντός των ορίων μιας επιλεγμένης περιοχής."
 
 msgid "Close"
 msgstr "Κλείσιμο"
@@ -2310,8 +2860,13 @@ msgstr "Μετακίνηση του επιλεγμένου καρέ προς τ�
 msgid "Move the selected frame to the right."
 msgstr "Μετακίνηση του επιλεγμένου καρέ προς τα δεξιά."
 
-msgid "Frame duration"
-msgstr "Διάρκεια καρέ"
+#. Refers to the duration of the frame. Found in the frame properties.
+msgid "Frame duration:"
+msgstr "Διάρκεια καρέ:"
+
+#. Refers to custom user defined data for projects, frames, cels, tags and layers, found in their respective properties.
+msgid "User data:"
+msgstr "Δεδομένα χρήστη:"
 
 msgid "Duration"
 msgstr "Διάρκεια"
@@ -2349,14 +2904,55 @@ msgstr "Προσθήκη νέου χρώματος"
 msgid "Remove a selected color"
 msgstr "Αφαίρεση επιλεγμένου χρώματος"
 
+#. Tooltip of the Sort button found in the palette panel.
+msgid "Sort palette"
+msgstr "Ταξινόμηση παλέτας"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette get reversed.
+msgid "Reverse colors"
+msgstr "Αντιστροφή χρωμάτων"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their hue.
+msgid "Sort by hue"
+msgstr "Ταξινόμηση κατά απόχρωσης"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their saturation.
+msgid "Sort by saturation"
+msgstr "Ταξινόμηση κατά κορεσμού"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their value.
+msgid "Sort by value"
+msgstr "Ταξινόμηση κατά τιμής"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their OKHSL Lightness.
+msgid "Sort by lightness"
+msgstr "Ταξινόμηση κατά φωτεινότητα"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their red channel value.
+msgid "Sort by red"
+msgstr "Ταξινόμηση κατά κόκκινου"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their green channel value.
+msgid "Sort by green"
+msgstr "Ταξινόμηση κατά πράσινου"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their blue channel value.
+msgid "Sort by blue"
+msgstr "Ταξινόμηση κατά μπλε"
+
+#. An option of the Sort palette button found in the palette panel. When selected, the colors of the palette are being sorted based on their alpha channel value.
+msgid "Sort by alpha"
+msgstr "Ταξινόμηση κατά αδιαφάνειας"
+
 msgid "Palette with the same name and path already exists!"
 msgstr "Υπάρχει ήδη παλέτα με το ίδιο όνομα και διαδρομή!"
 
 msgid "Palette name is required!"
 msgstr "Απαιτείται όνομα παλέτας!"
 
-msgid "Reducing palette size will reset positions of colors. Colors that don't fit in new palette size will be lost!"
-msgstr "Η μείωση του μεγέθους της παλέτας θα επηρεάσει τις θέσεις των χρωμάτων. Τα χρώματα που δεν χωρούν στο νέο μέγεθος της παλέτας θα χαθούν!"
+msgid "Reducing palette size will reset positions of colors.\n"
+"Colors that don't fit in new palette size will be lost!"
+msgstr "Η μείωση του μεγέθους της παλέτας θα επηρεάσει τις θέσεις των χρωμάτων. Τα χρώματα που δε χωρούν στο νέο μέγεθος της παλέτας θα χαθούν!"
 
 msgid "Position:"
 msgstr "Θέση:"
@@ -2578,6 +3174,10 @@ msgstr "Κάτω ακτίνα:"
 msgid "Text:"
 msgstr "Κείμενο:"
 
+#. Refers to the depth of something, such as the depth of a 3D object.
+msgid "Depth:"
+msgstr "Βάθος:"
+
 #. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Refers to the size of one pixel's width on the text to scale it in 3D.
 msgid "Pixel size:"
 msgstr "Μέγεθος εικονοστοιχείου:"
@@ -2589,11 +3189,18 @@ msgstr "Βήμα καμπυλότητας:"
 msgid "Horizontal alignment:"
 msgstr "Οριζόντια στοίχιση:"
 
+msgid "Vertical alignment:"
+msgstr "Κάθετη στοίχιση:"
+
 msgid "Left"
 msgstr "Αριστερά"
 
 msgid "Right"
 msgstr "Δεξιά"
+
+#. Refers to the vertical space between lines in a text.
+msgid "Line spacing:"
+msgstr "Διάστιχο γραμμών:"
 
 #. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. Refers to the energy of the light. The more energy, the brighter it shines.
 msgid "Energy:"
@@ -2690,9 +3297,105 @@ msgstr "Αναπήδηση στο τέλος"
 msgid "Backing out at ends"
 msgstr "Υποχώρηση στα άκρα"
 
-msgid "Silhouette"
-msgstr "Σιλουέτα"
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Spring towards the end"
+msgstr "Αναπήδηση προς το τέλος"
 
-msgid "Blacks out the image and makes all opaque pixels a dark color."
-msgstr "Μαυρίζει την εικόνα και κάνει όλα τα αδιαφανή εικονοστοιχεία ένα σκούρο χρώμα."
+#. Used to turn images into a singular color
+msgid "Monochrome"
+msgstr "Μονόχρωμο"
+
+#. Found in the Reference Images panel when no reference image has been imported.
+msgid "When opening an image, it may be imported as a reference."
+msgstr "Όταν ανοίγει μια εικόνα, μπορεί να εισαχθεί ως αναφορά."
+
+#. Found in the Reference Images panel after a reference image has been imported.
+msgid "Select an image below to change its properties.\n"
+"Note that you cannot draw while a reference image is selected."
+msgstr "Επιλέξτε μια εικόνα παρακάτω για να αλλάξετε τις ιδιότητές της.\n"
+"Σημειώστε ότι δεν μπορείτε να σχεδιάσετε ενώ έχει επιλεγεί μια εικόνα αναφοράς."
+
+#. Removes the selected reference image.
+msgid "Remove"
+msgstr "Αφαίρεση"
+
+#. A tooltip to tell users to hold the Shift key while clicking the remove button
+msgid "Hold Shift while pressing to instantly remove."
+msgstr "Κρατήστε πατημένο το Shift για άμεση αφαίρεση."
+
+#. Shown in the confirmation dialog for removing a reference image.
+msgid "Are you sure you want to remove this reference image? It will not be deleted from your file system."
+msgstr "Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτή την εικόνα αναφοράς? Δεν θα διαγραφεί από το σύστημα αρχείων σας."
+
+#. Moves the reference image up in the list
+msgid "Move the selected reference image to the right"
+msgstr "Μετακίνηση της επιλεγμένης εικόνας αναφοράς στα δεξιά"
+
+#. Moves the reference image down in the list
+msgid "Move the selected reference image to the left"
+msgstr "Μετακίνηση της επιλεγμένης εικόνας αναφοράς προς τα αριστερά"
+
+#. Select a reference on the canvas
+msgid "Selects a reference image on the canvas"
+msgstr "Επιλέγει μια εικόνα αναφοράς στον καμβά"
+
+#. Moves the reference on the canvas
+msgid "Move the selected reference image"
+msgstr "Μετακίνηση της επιλεγμένης εικόνας αναφοράς"
+
+#. Rotates the reference on the canvas
+msgid "Rotate the selected reference image"
+msgstr "Περιστροφή της επιλεγμένης εικόνας αναφοράς"
+
+#. Rotates the reference on the canvas
+msgid "Scale the selected reference image"
+msgstr "Κλιμάκωση της επιλεγμένης εικόνας αναφοράς"
+
+#. Button to select no reference images in the Reference Images panel.
+msgid "none"
+msgstr "κανένα"
+
+#. Resets the Transform of the selected reference image on the canvas.
+msgid "Reset Transform"
+msgstr "Επαναφορά μετατροπής"
+
+#. Position of the selected reference image on the canvas.
+msgid "Position"
+msgstr "Τοποθεσία"
+
+#. Scale of the selected reference image on the canvas.
+msgid "Scale"
+msgstr "Κλιμάκωση"
+
+#. Rotation of the selected reference image on the canvas.
+msgid "Rotation"
+msgstr "Περιστροφή"
+
+#. Toggle filter of the selected reference image on the canvas.
+msgid "Filter"
+msgstr "Φίλτρο"
+
+#. Opacity of the selected reference image on the canvas.
+msgid "Opacity"
+msgstr "Αδιαφάνεια"
+
+#. Color clamping of the selected reference image on the canvas.
+msgid "Color Clamping"
+msgstr "Περιορισμός χρωμάτων"
+
+#. Used in checkbuttons (like on/off switches) that enable/disable something.
+msgid "Enabled"
+msgstr "Ενεργό"
+
+#. Refers to non-destructive effects (such as outline, drop shadow etc) that are applied to layers. Found in the title of the layer effects dialog.
+msgid "Layer effects"
+msgstr "Εφέ στρώσης"
+
+#. A button that, when pressed, shows a list of effects to add. Found in the the layer effects dialog.
+msgid "Add effect"
+msgstr "Προσθήκη εφέ"
+
+#. Text from a confirmation dialog that appears when the user is attempting to drag and drop an image directly from the browser into Pixelorama.
+msgid "Do you want to download the image from %s?"
+msgstr "Θέλετε να κάνετε λήψη της εικόνας από %s;"
 

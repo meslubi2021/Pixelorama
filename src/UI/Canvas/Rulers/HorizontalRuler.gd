@@ -8,10 +8,17 @@ var minor_subdivision := 4
 var first: Vector2
 var last: Vector2
 
+@onready var vertical_ruler := $"../ViewportandVerticalRuler/VerticalRuler" as Button
+
 
 func _ready() -> void:
-	Global.project_changed.connect(queue_redraw)
-	Global.main_viewport.item_rect_changed.connect(queue_redraw)
+	Global.project_switched.connect(queue_redraw)
+	Global.camera.zoom_changed.connect(queue_redraw)
+	Global.camera.rotation_changed.connect(queue_redraw)
+	Global.camera.offset_changed.connect(queue_redraw)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	queue_redraw()
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -21,7 +28,7 @@ func _gui_input(event: InputEvent) -> void:
 
 # Code taken and modified from Godot's source code
 func _draw() -> void:
-	var font: Font = Global.control.theme.default_font
+	var font := Themes.get_font()
 	var transform := Transform2D()
 	var ruler_transform := Transform2D()
 	var major_subdivide := Transform2D()
@@ -86,7 +93,10 @@ func _draw() -> void:
 			draw_string(
 				font,
 				Vector2(pos.x + RULER_WIDTH + 2, font.get_height() - 4),
-				str(snappedf(val, 0.1))
+				str(snappedf(val, 0.1)),
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				Themes.get_font_size()
 			)
 		else:
 			if j % minor_subdivision == 0:
@@ -112,7 +122,7 @@ func create_guide() -> void:
 		return
 	var mouse_pos := get_local_mouse_position()
 	if mouse_pos.x < RULER_WIDTH:  # For double guides
-		Global.vertical_ruler.create_guide()
+		vertical_ruler.create_guide()
 	var guide := Guide.new()
 	if absf(Global.camera.rotation_degrees) < 45 or absf(Global.camera.rotation_degrees) > 135:
 		guide.type = guide.Types.HORIZONTAL

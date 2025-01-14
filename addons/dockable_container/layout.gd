@@ -23,16 +23,35 @@ enum { MARGIN_LEFT, MARGIN_RIGHT, MARGIN_TOP, MARGIN_BOTTOM, MARGIN_CENTER }
 		if value != _hidden_tabs:
 			_hidden_tabs = value
 			changed.emit()
+## A [Dictionary] of [StringName] and [Dictionary], containing data such as position and size.
+@export var windows := {}:
+	get:
+		return _windows
+	set(value):
+		if value != _windows:
+			_windows = value
+			changed.emit()
+@export var save_on_change := false:
+	set(value):
+		save_on_change = value
+		if value:
+			if not changed.is_connected(save):
+				changed.connect(save)
+		else:
+			if changed.is_connected(save):
+				changed.disconnect(save)
 
 var _changed_signal_queued := false
 var _first_leaf: DockableLayoutPanel
 var _hidden_tabs: Dictionary
+var _windows: Dictionary
 var _leaf_by_node_name: Dictionary
 var _root: DockableLayoutNode = DockableLayoutPanel.new()
 
 
 func _init() -> void:
-	resource_name = "Layout"
+	if resource_name.is_empty():
+		resource_name = "Layout"
 
 
 func set_root(value: DockableLayoutNode, should_emit_changed := true) -> void:
@@ -59,6 +78,12 @@ func clone() -> DockableLayout:
 
 func get_names() -> PackedStringArray:
 	return _root.get_names()
+
+
+func save(path := resource_path) -> void:
+	if path.is_empty():
+		return
+	ResourceSaver.save(self, path)
 
 
 ## Add missing nodes on first leaf and remove nodes outside indices from leaves.
@@ -164,6 +189,15 @@ func set_tab_hidden(name: String, hidden: bool) -> void:
 	else:
 		_hidden_tabs.erase(name)
 	_on_root_changed()
+
+
+func save_window_properties(window_name: StringName, data: Dictionary) -> void:
+	var new_windows = windows.duplicate(true)
+	if data.is_empty():
+		new_windows.erase(window_name)
+	else:
+		new_windows[window_name] = data
+	windows = new_windows
 
 
 func is_tab_hidden(name: String) -> bool:

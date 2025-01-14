@@ -5,7 +5,7 @@ var color := Color.BLACK
 var thickness := 1
 var pattern := 0
 var inside_image := false
-var shader := preload("res://src/Shaders/OutlineInline.gdshader")
+var shader := preload("res://src/Shaders/Effects/OutlineInline.gdshader")
 
 @onready var outline_color := $VBoxContainer/OutlineOptions/OutlineColor as ColorPickerButton
 
@@ -25,12 +25,13 @@ func commit_action(cel: Image, project := Global.current_project) -> void:
 	var anim_thickness := animate_panel.get_animated_value(commit_idx, Animate.THICKNESS)
 	var selection_tex: ImageTexture
 	if selection_checkbox.button_pressed and project.has_selection:
-		selection_tex = ImageTexture.create_from_image(project.selection_map)
+		var selection := project.selection_map.return_cropped_copy(project.size)
+		selection_tex = ImageTexture.create_from_image(selection)
 
 	var params := {
 		"color": color,
 		"width": anim_thickness,
-		"pattern": pattern,
+		"brush": pattern,
 		"inside": inside_image,
 		"selection": selection_tex
 	}
@@ -40,7 +41,6 @@ func commit_action(cel: Image, project := Global.current_project) -> void:
 	else:
 		var gen := ShaderImageEffect.new()
 		gen.generate_image(cel, shader, params, project.size)
-		await gen.done
 
 
 func _on_ThickValue_value_changed(value: int) -> void:

@@ -4,6 +4,35 @@ extends TabBar
 var unsaved_changes_dialog: ConfirmationDialog = Global.control.find_child("UnsavedCanvasDialog")
 
 
+func _input(_event: InputEvent) -> void:
+	# NOTE: This feature has an unavoidable bug which sometimes causes the undoredo
+	# system to fail, because user is trying to draw while switching project simultaneously.
+	# This is because the current project has changed and the system tries to commit to the
+	# wrong undoredo.
+	# If a project is currently worked upon, then don't switch it.
+	# This doesn't stop the bug completely but significantly reduces its chances
+	# of appearing.
+	if (
+		Input.is_action_pressed("activate_left_tool")
+		or Input.is_action_pressed("activate_right_tool")
+	):
+		return
+	# Due to the bug mentioned above, we will use is_action_just_released
+	# instead of is_action_just_pressed. This won't remove the bug completely
+	# but it will significantly reduce its chance of appearing.
+	var tab_idx := current_tab
+	if Input.is_action_just_released(&"next_project", true):
+		tab_idx += 1
+		if tab_idx >= tab_count:
+			tab_idx = 0
+	elif Input.is_action_just_released(&"previous_project", true):
+		tab_idx -= 1
+		if tab_idx < 0:
+			tab_idx = tab_count - 1
+	if tab_idx != current_tab:
+		current_tab = tab_idx
+
+
 ## Handles closing tab with middle-click
 ## Thanks to https://github.com/godotengine/godot/issues/64498#issuecomment-1217992089
 func _gui_input(event: InputEvent) -> void:
@@ -47,21 +76,10 @@ func _on_active_tab_rearranged(idx_to: int) -> void:
 	Global.projects.erase(temp)
 	Global.projects.insert(idx_to, temp)
 
-	# Change save paths
-	var temp_save_path := OpenSave.current_save_paths[Global.current_project_index]
-	OpenSave.current_save_paths.remove_at(Global.current_project_index)
-	OpenSave.current_save_paths.insert(idx_to, temp_save_path)
-	var temp_backup_path := OpenSave.backup_save_paths[Global.current_project_index]
-	OpenSave.backup_save_paths.remove_at(Global.current_project_index)
-	OpenSave.backup_save_paths.insert(idx_to, temp_backup_path)
-
 
 func delete_tab(tab: int) -> void:
 	remove_tab(tab)
 	Global.projects[tab].remove()
-	OpenSave.remove_backup(tab)
-	OpenSave.current_save_paths.remove_at(tab)
-	OpenSave.backup_save_paths.remove_at(tab)
 	if Global.current_project_index == tab:
 		if tab > 0:
 			Global.current_project_index -= 1

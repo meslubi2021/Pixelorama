@@ -10,8 +10,8 @@ const MOUSE_BUTTON_NAMES: PackedStringArray = [
 	"Wheel Down Button",
 	"Wheel Left Button",
 	"Wheel Right Button",
-	"X Button 1",
-	"X Button 2",
+	"Mouse Thumb Button 1",
+	"Mouse Thumb Button 2",
 ]
 
 const JOY_BUTTON_NAMES: PackedStringArray = [
@@ -199,17 +199,8 @@ func get_action_name(action: String) -> String:
 		display_name = Keychain.actions[action].display_name
 
 	if display_name.is_empty():
-		display_name = _humanize_snake_case(action)
+		display_name = Keychain.humanize_snake_case(action)
 	return display_name
-
-
-func _humanize_snake_case(text: String) -> String:
-	text = text.replace("_", " ")
-	var first_letter := text.left(1)
-	first_letter = first_letter.capitalize()
-	text = text.right(-1)
-	text = text.insert(0, first_letter)
-	return text
 
 
 func add_event_tree_item(event: InputEvent, action_tree_item: TreeItem) -> void:
@@ -280,7 +271,7 @@ func _on_shortcut_tree_button_clicked(item: TreeItem, _column: int, id: int, _mb
 			rect.position.y += 42 - tree.get_scroll().y
 			rect.position += global_position
 			rect.size = Vector2(110, 23 * shortcut_type_menu.get_item_count())
-			shortcut_type_menu.popup(rect)
+			shortcut_type_menu.popup_on_parent(rect)
 		elif id == 1:  # Delete
 			Keychain.action_erase_events(action)
 			Keychain.selected_profile.change_action(action)

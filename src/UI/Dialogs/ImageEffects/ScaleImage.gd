@@ -22,8 +22,6 @@ func _ready() -> void:
 
 
 func _on_ScaleImage_about_to_show() -> void:
-	if DrawingAlgos.clean_edge_shader == null:
-		DrawingAlgos.clean_edge_shader = load("res://src/Shaders/Rotation/cleanEdge.gdshader")
 	Global.canvas.selection.transform_content_confirm()
 	aspect_ratio = float(Global.current_project.size.x) / float(Global.current_project.size.y)
 	width_value.value = Global.current_project.size.x
@@ -36,7 +34,7 @@ func _on_ScaleImage_confirmed() -> void:
 	var width: int = width_value.value
 	var height: int = height_value.value
 	var interpolation: int = interpolation_type.selected
-	DrawingAlgos.scale_image(width, height, interpolation)
+	DrawingAlgos.scale_project(width, height, interpolation)
 
 
 func _on_visibility_changed() -> void:

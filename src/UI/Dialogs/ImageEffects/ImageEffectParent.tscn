@@ -1,21 +1,22 @@
-[gd_scene load_steps=5 format=3 uid="uid://bybqhhayl5ay5"]
+[gd_scene load_steps=6 format=3 uid="uid://bybqhhayl5ay5"]
 
 [ext_resource type="PackedScene" uid="uid://dmlgx1jgau8a5" path="res://src/UI/Nodes/AnimatePanel.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://3pmb60gpst7b" path="res://src/UI/Nodes/TransparentChecker.tscn" id="2"]
 [ext_resource type="Script" path="res://src/Classes/ImageEffect.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://blrd4x0ma7b3h" path="res://assets/graphics/misc/animate.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://yjhp0ssng2mp" path="res://src/UI/Nodes/Sliders/ValueSlider.tscn" id="4_whox6"]
 
 [node name="ImageEffectParent" type="ConfirmationDialog"]
 canvas_item_default_texture_filter = 0
-size = Vector2i(360, 316)
-exclusive = false
+position = Vector2i(0, 36)
+size = Vector2i(362, 379)
 script = ExtResource("3")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 352.0
-offset_bottom = 267.0
+offset_right = 354.0
+offset_bottom = 330.0
 
 [node name="ShowAnimate" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true
@@ -26,16 +27,15 @@ mouse_default_cursor_shape = 2
 toggle_mode = true
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/ShowAnimate"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
-offset_top = 2.0
-offset_right = -2.0
-offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("4")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -45,7 +45,7 @@ size_flags_vertical = 3
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 4
 
 [node name="TransparentChecker" parent="VBoxContainer/AspectRatioContainer/Preview" instance=ExtResource("2")]
 show_behind_parent = true
@@ -53,6 +53,29 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
+
+[node name="LiveSettings" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="LiveCheckbox" type="CheckBox" parent="VBoxContainer/LiveSettings"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+text = "Live Preview"
+
+[node name="WaitTime" parent="VBoxContainer/LiveSettings" instance=ExtResource("4_whox6")]
+visible = false
+layout_mode = 2
+min_value = 1.0
+max_value = 1000.0
+value = 200.0
+editable = false
+prefix = "Preview delay:"
+suffix = "ms"
+
+[node name="WaitApply" type="Timer" parent="VBoxContainer/LiveSettings"]
 
 [node name="OptionsContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -90,3 +113,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = 0.0
 offset_bottom = 0.0
+
+[connection signal="toggled" from="VBoxContainer/LiveSettings/LiveCheckbox" to="." method="_on_live_checkbox_toggled"]
+[connection signal="value_changed" from="VBoxContainer/LiveSettings/WaitTime" to="." method="_on_wait_time_value_changed"]
+[connection signal="timeout" from="VBoxContainer/LiveSettings/WaitApply" to="." method="_on_wait_apply_timeout"]

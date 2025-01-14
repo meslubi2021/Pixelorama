@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://ba24iuv55m4l3"]
+[gd_scene load_steps=25 format=3 uid="uid://ba24iuv55m4l3"]
 
 [ext_resource type="Script" path="res://src/UI/Canvas/Canvas.gd" id="1"]
+[ext_resource type="Shader" path="res://src/Shaders/BlendLayers.gdshader" id="1_253dh"]
 [ext_resource type="Script" path="res://src/UI/Canvas/Grid.gd" id="2"]
 [ext_resource type="Script" path="res://src/UI/Canvas/Indicators.gd" id="3"]
 [ext_resource type="Script" path="res://src/UI/Canvas/TileMode.gd" id="4"]
@@ -9,28 +10,45 @@
 [ext_resource type="Script" path="res://src/UI/Canvas/Previews.gd" id="7"]
 [ext_resource type="Script" path="res://src/UI/Canvas/Selection.gd" id="8"]
 [ext_resource type="Shader" path="res://src/Shaders/MarchingAntsOutline.gdshader" id="9"]
-[ext_resource type="Shader" path="res://src/Shaders/AutoInvertColors.gdshader" id="10"]
 [ext_resource type="PackedScene" uid="uid://no3w7e2264u4" path="res://src/UI/Canvas/MouseGuideContainer.tscn" id="11"]
 [ext_resource type="Script" path="res://src/UI/Canvas/OnionSkinning.gd" id="12"]
 [ext_resource type="Script" path="res://src/UI/Canvas/CropRect.gd" id="13"]
 [ext_resource type="Script" path="res://src/UI/Canvas/Gizmos3D.gd" id="14"]
+[ext_resource type="Script" path="res://src/UI/Canvas/Measurements.gd" id="16_nxilb"]
+[ext_resource type="Shader" path="res://src/Shaders/AutoInvertColors.gdshader" id="17_lowhf"]
+[ext_resource type="Script" path="res://src/UI/Canvas/ReferenceImages.gd" id="17_qfjb4"]
+[ext_resource type="Script" path="res://src/UI/Canvas/color_index.gd" id="18_o3xx2"]
+[ext_resource type="Script" path="res://src/UI/Canvas/TileModeIndices.gd" id="19_7a6wb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6b0ox"]
+shader = ExtResource("1_253dh")
+shader_parameter/origin_x_positive = true
+shader_parameter/origin_y_positive = true
 
 [sub_resource type="CanvasItemMaterial" id="1"]
 blend_mode = 4
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ascg6"]
+shader = ExtResource("17_lowhf")
+shader_parameter/width = 0.05
+shader_parameter/hollow_shapes = false
+
 [sub_resource type="ShaderMaterial" id="2"]
 shader = ExtResource("9")
+shader_parameter/width = 0.05
 shader_parameter/first_color = Color(1, 1, 1, 1)
 shader_parameter/second_color = Color(0, 0, 0, 1)
 shader_parameter/animated = true
-shader_parameter/width = 0.05
 shader_parameter/frequency = 200.0
 shader_parameter/stripe_direction = 0.5
 
 [sub_resource type="ShaderMaterial" id="3"]
-shader = ExtResource("10")
+shader = ExtResource("17_lowhf")
+shader_parameter/width = 0.05
+shader_parameter/hollow_shapes = true
 
 [node name="Canvas" type="Node2D"]
+material = SubResource("ShaderMaterial_6b0ox")
 script = ExtResource("1")
 
 [node name="CurrentlyVisibleFrame" type="SubViewport" parent="."]
@@ -40,12 +58,17 @@ handle_input_locally = false
 render_target_update_mode = 3
 
 [node name="CurrentFrameDrawer" type="Node2D" parent="CurrentlyVisibleFrame"]
+material = SubResource("ShaderMaterial_6b0ox")
 script = ExtResource("5")
 
 [node name="TileMode" type="Node2D" parent="."]
 show_behind_parent = true
 material = SubResource("1")
 script = ExtResource("4")
+
+[node name="ColorIndex" type="Node2D" parent="."]
+material = SubResource("ShaderMaterial_ascg6")
+script = ExtResource("18_o3xx2")
 
 [node name="PixelGrid" type="Node2D" parent="."]
 script = ExtResource("6")
@@ -71,13 +94,27 @@ script = ExtResource("3")
 material = SubResource("3")
 script = ExtResource("7")
 
-[node name="OnionPast" type="Node2D" parent="."]
+[node name="PreviewsSprite" type="Sprite2D" parent="."]
+material = SubResource("3")
+centered = false
+
+[node name="OnionPast" type="Node2D" parent="." groups=["canvas_onion_skinning"]]
 script = ExtResource("12")
 
-[node name="OnionFuture" type="Node2D" parent="."]
+[node name="OnionFuture" type="Node2D" parent="." groups=["canvas_onion_skinning"]]
 script = ExtResource("12")
 
 [node name="MouseGuideContainer" parent="." instance=ExtResource("11")]
 
 [node name="Gizmos3D" type="Node2D" parent="."]
 script = ExtResource("14")
+
+[node name="Measurements" type="Node2D" parent="."]
+script = ExtResource("16_nxilb")
+
+[node name="ReferenceImages" type="Node2D" parent="."]
+script = ExtResource("17_qfjb4")
+
+[node name="TileModeIndices" type="Node2D" parent="."]
+material = SubResource("ShaderMaterial_ascg6")
+script = ExtResource("19_7a6wb")

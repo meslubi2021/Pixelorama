@@ -2,12 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://3pmb60gpst7b" path="res://src/UI/Nodes/TransparentChecker.tscn" id="1"]
 [ext_resource type="Shader" path="res://src/Shaders/TransparentChecker.gdshader" id="2"]
-[ext_resource type="Script" path="res://src/UI/Canvas/CameraMovement.gd" id="3"]
 [ext_resource type="Script" path="res://src/UI/CanvasPreviewContainer/CanvasPreviewContainer.gd" id="4"]
 [ext_resource type="PackedScene" uid="uid://c546tskdu53j1" path="res://src/UI/Canvas/CanvasPreview.tscn" id="5"]
+[ext_resource type="Script" path="res://src/UI/Canvas/CanvasCamera.gd" id="5_ge2km"]
 [ext_resource type="Texture2D" uid="uid://c7smxwfa8826j" path="res://assets/graphics/timeline/play.png" id="6"]
-[ext_resource type="PackedScene" uid="uid://cii2hpylme60s" path="res://src/UI/Nodes/CollapsibleContainer.tscn" id="7"]
-[ext_resource type="Script" path="res://src/UI/Nodes/ValueSlider.gd" id="8"]
+[ext_resource type="Script" path="res://src/UI/Nodes/CollapsibleContainer.gd" id="7_o7sn3"]
+[ext_resource type="Script" path="res://src/UI/Nodes/Sliders/ValueSlider.gd" id="8"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("2")
@@ -74,14 +74,12 @@ render_target_update_mode = 4
 material = SubResource("1")
 anchors_preset = 0
 
-[node name="CanvasPreview" parent="VBox/HBox/PreviewViewportContainer/SubViewport" instance=ExtResource("5")]
+[node name="CanvasPreview" parent="VBox/HBox/PreviewViewportContainer/SubViewport" groups=["CanvasPreviews"] instance=ExtResource("5")]
 unique_name_in_owner = true
 
-[node name="CameraPreview" type="Camera2D" parent="VBox/HBox/PreviewViewportContainer/SubViewport"]
+[node name="CameraPreview" type="Node2D" parent="VBox/HBox/PreviewViewportContainer/SubViewport" groups=["CanvasCameras"]]
 unique_name_in_owner = true
-offset = Vector2(32, 32)
-zoom = Vector2(0.15, 0.15)
-script = ExtResource("3")
+script = ExtResource("5_ge2km")
 index = 2
 
 [node name="Animation" type="HBoxContainer" parent="VBox"]
@@ -89,9 +87,9 @@ layout_mode = 2
 
 [node name="PlayButton" type="Button" parent="VBox/Animation" groups=["UIButtons"]]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-size_flags_vertical = 0
+size_flags_vertical = 4
 mouse_default_cursor_shape = 2
 toggle_mode = true
 
@@ -124,16 +122,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 clip_text = true
-item_count = 2
 selected = 0
+item_count = 2
 popup/item_0/text = "All frames"
-popup/item_0/id = 0
 popup/item_1/text = "Current frame as spritesheet"
 popup/item_1/id = 1
 
-[node name="Options" parent="VBox/Animation/VBoxContainer" instance=ExtResource("7")]
+[node name="Options" type="VBoxContainer" parent="VBox/Animation/VBoxContainer"]
 visible = false
 layout_mode = 2
+theme_type_variation = &"CollapsibleContainer"
+script = ExtResource("7_o7sn3")
 text = "Spritesheet options"
 
 [node name="GridContainer" type="GridContainer" parent="VBox/Animation/VBoxContainer/Options"]

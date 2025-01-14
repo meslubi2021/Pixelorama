@@ -1,4 +1,4 @@
-extends SelectionTool
+extends BaseSelectionTool
 
 var _rect := Rect2i(0, 0, 0, 0)
 
@@ -48,24 +48,26 @@ func draw_end(pos: Vector2i) -> void:
 
 
 func draw_preview() -> void:
+	var canvas := Global.canvas.previews_sprite
 	if !_move && _rect.has_area():
-		var canvas: Node2D = Global.canvas.previews
-		var pos := canvas.position
-		var canvas_scale := canvas.scale
 		var temp_rect := _rect
-		if Global.mirror_view:
-			pos.x = pos.x + Global.current_project.size.x
-			temp_rect.position.x = Global.current_project.size.x - temp_rect.position.x
-			canvas_scale.x = -1
 
-		var border := DrawingAlgos.get_ellipse_points_filled(Vector2.ZERO, temp_rect.size)
-		var indicator := _fill_bitmap_with_points(border, temp_rect.size)
-
-		canvas.draw_set_transform(temp_rect.position, canvas.rotation, canvas_scale)
-		for line in _create_polylines(indicator):
-			canvas.draw_polyline(PackedVector2Array(line), Color.BLACK)
-
-		canvas.draw_set_transform(canvas.position, canvas.rotation, canvas.scale)
+		var points := DrawingAlgos.get_ellipse_points(Vector2.ZERO, temp_rect.size)
+		var image := Image.create(
+			Global.current_project.size.x, Global.current_project.size.y, false, Image.FORMAT_LA8
+		)
+		for i in points.size():
+			points[i] += temp_rect.position
+			if Global.mirror_view:  # This fixes previewing in mirror mode
+				points[i].x = image.get_width() - points[i].x - 1
+			if Rect2i(Vector2i.ZERO, image.get_size()).has_point(points[i]):
+				image.set_pixelv(points[i], Color.WHITE)
+		# Handle mirroring
+		for point in mirror_array(points):
+			if Rect2i(Vector2i.ZERO, image.get_size()).has_point(point):
+				image.set_pixelv(point, Color.WHITE)
+		var texture := ImageTexture.create_from_image(image)
+		canvas.texture = texture
 
 
 func apply_selection(_position: Vector2i) -> void:
@@ -75,43 +77,45 @@ func apply_selection(_position: Vector2i) -> void:
 		Global.canvas.selection.clear_selection()
 		if _rect.size == Vector2i.ZERO and Global.current_project.has_selection:
 			Global.canvas.selection.commit_undo("Select", undo_data)
-
-	if _rect.size != Vector2i.ZERO:
-		var selection_map_copy := SelectionMap.new()
-		selection_map_copy.copy_from(project.selection_map)
-		set_ellipse(selection_map_copy, _rect.position)
-
+	if _rect.size == Vector2i.ZERO:
+		return
+	if Tools.is_placing_tiles():
+		var operation := 0
+		if _subtract:
+			operation = 1
+		elif _intersect:
+			operation = 2
+		Global.canvas.selection.select_rect(_rect, operation)
 		# Handle mirroring
-		if Tools.horizontal_mirror:
-			var mirror_x_rect := _rect
-			mirror_x_rect.position.x = (
-				Global.current_project.x_symmetry_point - _rect.position.x + 1
-			)
-			mirror_x_rect.end.x = Global.current_project.x_symmetry_point - _rect.end.x + 1
-			set_ellipse(selection_map_copy, mirror_x_rect.abs().position)
-			if Tools.vertical_mirror:
-				var mirror_xy_rect := mirror_x_rect
-				mirror_xy_rect.position.y = (
-					Global.current_project.y_symmetry_point - _rect.position.y + 1
-				)
-				mirror_xy_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-				set_ellipse(selection_map_copy, mirror_xy_rect.abs().position)
-		if Tools.vertical_mirror:
-			var mirror_y_rect := _rect
-			mirror_y_rect.position.y = (
-				Global.current_project.y_symmetry_point - _rect.position.y + 1
-			)
-			mirror_y_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-			set_ellipse(selection_map_copy, mirror_y_rect.abs().position)
+		var mirror_positions := Tools.get_mirrored_positions(_rect.position, project, 1)
+		var mirror_ends := Tools.get_mirrored_positions(_rect.end, project, 1)
+		for i in mirror_positions.size():
+			var mirror_rect := Rect2i()
+			mirror_rect.position = mirror_positions[i]
+			mirror_rect.end = mirror_ends[i]
+			Global.canvas.selection.select_rect(mirror_rect.abs(), operation)
 
-		project.selection_map = selection_map_copy
+		Global.canvas.selection.commit_undo("Select", undo_data)
+	else:
+		set_ellipse(project.selection_map, _rect.position)
+		# Handle mirroring
+		var mirror_positions := Tools.get_mirrored_positions(_rect.position, project, 1)
+		var mirror_ends := Tools.get_mirrored_positions(_rect.end, project, 1)
+		for i in mirror_positions.size():
+			var mirror_rect := Rect2i()
+			mirror_rect.position = mirror_positions[i]
+			mirror_rect.end = mirror_ends[i]
+			set_ellipse(project.selection_map, mirror_rect.abs().position)
+
 		Global.canvas.selection.big_bounding_rectangle = project.selection_map.get_used_rect()
 		Global.canvas.selection.commit_undo("Select", undo_data)
+	Global.canvas.previews_sprite.texture = null
 
 
 func set_ellipse(selection_map: SelectionMap, pos: Vector2i) -> void:
-	var project := Global.current_project
 	var bitmap_size := selection_map.get_size()
+	var previous_selection_map := SelectionMap.new()  # Used for intersect
+	previous_selection_map.copy_from(selection_map)
 	if _intersect:
 		selection_map.clear()
 	var points := DrawingAlgos.get_ellipse_points_filled(Vector2.ZERO, _rect.size)
@@ -120,7 +124,7 @@ func set_ellipse(selection_map: SelectionMap, pos: Vector2i) -> void:
 		if fill_p.x < 0 or fill_p.y < 0 or fill_p.x >= bitmap_size.x or fill_p.y >= bitmap_size.y:
 			continue
 		if _intersect:
-			if project.selection_map.is_pixel_selected(fill_p):
+			if previous_selection_map.is_pixel_selected(fill_p):
 				selection_map.select_pixel(fill_p, true)
 		else:
 			selection_map.select_pixel(fill_p, !_subtract)
@@ -129,8 +133,12 @@ func set_ellipse(selection_map: SelectionMap, pos: Vector2i) -> void:
 # Given an origin point and destination point, returns a rect representing
 # where the shape will be drawn and what is its size
 func _get_result_rect(origin: Vector2i, dest: Vector2i) -> Rect2i:
+	if Tools.is_placing_tiles():
+		var tileset := (Global.current_project.get_current_cel() as CelTileMap).tileset
+		var grid_size := tileset.tile_size
+		origin = Tools.snap_to_rectangular_grid_boundary(origin, grid_size)
+		dest = Tools.snap_to_rectangular_grid_boundary(dest, grid_size)
 	var rect := Rect2i()
-
 	# Center the rect on the mouse
 	if _expand_from_center:
 		var new_size := dest - origin
@@ -153,6 +161,7 @@ func _get_result_rect(origin: Vector2i, dest: Vector2i) -> Rect2i:
 		rect.position = Vector2i(mini(origin.x, dest.x), mini(origin.y, dest.y))
 		rect.size = (origin - dest).abs()
 
-	rect.size += Vector2i.ONE
+	if not Tools.is_placing_tiles():
+		rect.size += Vector2i.ONE
 
 	return rect

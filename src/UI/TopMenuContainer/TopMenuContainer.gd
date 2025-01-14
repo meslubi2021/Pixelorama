@@ -1,49 +1,160 @@
 extends Panel
-# gdlint: ignore=max-line-length
-const CHANGELOG_URL := "https://github.com/Orama-Interactive/Pixelorama/blob/master/CHANGELOG.md#v011---2023-06-13"
 
-var file_menu: PopupMenu
-var view_menu: PopupMenu
-var window_menu: PopupMenu
+enum ColorModes { RGBA, INDEXED }
+
+const DOCS_URL := "https://www.oramainteractive.com/Pixelorama-Docs/"
+const ISSUES_URL := "https://github.com/Orama-Interactive/Pixelorama/issues"
+const SUPPORT_URL := "https://www.patreon.com/OramaInteractive"
+# gdlint: ignore=max-line-length
+const CHANGELOG_URL := "https://github.com/Orama-Interactive/Pixelorama/blob/master/CHANGELOG.md#v105---2024-11-18"
+const EXTERNAL_LINK_ICON := preload("res://assets/graphics/misc/external_link.svg")
+const PIXELORAMA_ICON := preload("res://assets/graphics/icons/icon_16x16.png")
+const HEART_ICON := preload("res://assets/graphics/misc/heart.svg")
+
 var recent_projects := []
-var layouts := [
-	["Default", preload("res://assets/layouts/default.tres")],
-	["Tallscreen", preload("res://assets/layouts/tallscreen.tres")],
-]
-var default_layout_size := layouts.size()
 var selected_layout := 0
 var zen_mode := false
+var loaded_effects_submenu: PopupMenu
 
-@onready var ui := Global.control.find_child("DockableContainer") as DockableContainer
-@onready var ui_elements := ui.get_children()
-@onready var file_menu_button := $MenuItems/FileMenu
-@onready var edit_menu_button := $MenuItems/EditMenu
-@onready var select_menu_button := $MenuItems/SelectMenu
-@onready var image_menu_button := $MenuItems/ImageMenu
-@onready var view_menu_button := $MenuItems/ViewMenu
-@onready var window_menu_button := $MenuItems/WindowMenu
-@onready var help_menu_button := $MenuItems/HelpMenu
+# Dialogs
+var new_image_dialog := Dialog.new("res://src/UI/Dialogs/CreateNewImage.tscn")
+var project_properties_dialog := Dialog.new("res://src/UI/Dialogs/ProjectProperties.tscn")
+var preferences_dialog := Dialog.new("res://src/Preferences/PreferencesDialog.tscn")
+var modify_selection := Dialog.new("res://src/UI/Dialogs/ModifySelection.tscn")
+var offset_image_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/OffsetImage.tscn")
+var scale_image_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/ScaleImage.tscn")
+var resize_canvas_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/ResizeCanvas.tscn")
+var mirror_image_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/FlipImageDialog.tscn")
+var rotate_image_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/RotateImage.tscn")
+var invert_colors_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/InvertColorsDialog.tscn")
+var desaturate_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/DesaturateDialog.tscn")
+var outline_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/OutlineDialog.tscn")
+var drop_shadow_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/DropShadowDialog.tscn")
+var hsv_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/HSVDialog.tscn")
+var adjust_brightness_saturation_dialog := Dialog.new(
+	"res://src/UI/Dialogs/ImageEffects/BrightnessContrastDialog.tscn"
+)
+var color_curves_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/ColorCurvesDialog.tscn")
+var gaussian_blur_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/GaussianBlur.tscn")
+var gradient_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/GradientDialog.tscn")
+var gradient_map_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/GradientMapDialog.tscn")
+var palettize_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/PalettizeDialog.tscn")
+var pixelize_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/PixelizeDialog.tscn")
+var posterize_dialog := Dialog.new("res://src/UI/Dialogs/ImageEffects/Posterize.tscn")
+var loaded_effect_dialogs: Array[Dialog] = []
+var manage_layouts_dialog := Dialog.new("res://src/UI/Dialogs/ManageLayouts.tscn")
+var window_opacity_dialog := Dialog.new("res://src/UI/Dialogs/WindowOpacityDialog.tscn")
+var about_dialog := Dialog.new("res://src/UI/Dialogs/AboutDialog.tscn")
 
-@onready var greyscale_vision: ColorRect = ui.find_child("GreyscaleVision")
-@onready var new_image_dialog: ConfirmationDialog = Global.control.find_child("CreateNewImage")
-@onready var window_opacity_dialog: AcceptDialog = Global.control.find_child("WindowOpacityDialog")
+@onready var main_ui := Global.control.find_child("DockableContainer") as DockableContainer
+@onready var ui_elements := main_ui.get_children()
+@onready var file_menu := $MarginContainer/HBoxContainer/MenuBar/File as PopupMenu
+@onready var edit_menu := $MarginContainer/HBoxContainer/MenuBar/Edit as PopupMenu
+@onready var select_menu := $MarginContainer/HBoxContainer/MenuBar/Select as PopupMenu
+@onready var image_menu := $MarginContainer/HBoxContainer/MenuBar/Image as PopupMenu
+@onready var effects_menu := $MarginContainer/HBoxContainer/MenuBar/Effects as PopupMenu
+@onready var view_menu := $MarginContainer/HBoxContainer/MenuBar/View as PopupMenu
+@onready var window_menu := $MarginContainer/HBoxContainer/MenuBar/Window as PopupMenu
+@onready var help_menu := $MarginContainer/HBoxContainer/MenuBar/Help as PopupMenu
+
+@onready var greyscale_vision: ColorRect = main_ui.find_child("GreyscaleVision")
 @onready var tile_mode_submenu := PopupMenu.new()
+@onready var selection_modify_submenu := PopupMenu.new()
+@onready var color_mode_submenu := PopupMenu.new()
 @onready var snap_to_submenu := PopupMenu.new()
 @onready var panels_submenu := PopupMenu.new()
 @onready var layouts_submenu := PopupMenu.new()
 @onready var recent_projects_submenu := PopupMenu.new()
+@onready var current_frame_mark := %CurrentFrameMark as Label
+
+
+class Dialog:
+	## This class is used to help with lazy loading dialog scenes in order to
+	## reduce Pixelorama's initial loading time, by only loading each dialog
+	## scene when it's actually needed.
+	var scene_path := ""
+	var node: Window
+
+	func _init(_scene_path: String) -> void:
+		scene_path = _scene_path
+
+	func popup(dialog_size := Vector2i.ZERO) -> void:
+		if not is_instance_valid(node):
+			instantiate_scene()
+		node.popup_centered(dialog_size)
+		var is_file_dialog := node is FileDialog
+		Global.dialog_open(true, is_file_dialog)
+
+	func instantiate_scene() -> void:
+		var scene := load(scene_path)
+		if not scene is PackedScene:
+			return
+		node = scene.instantiate()
+		if is_instance_valid(node):
+			Global.control.get_node("Dialogs").add_child(node)
 
 
 func _ready() -> void:
-	var dir := DirAccess.open("user://")
-	dir.make_dir("user://layouts")
+	Global.project_switched.connect(_project_switched)
+	Global.cel_switched.connect(_update_current_frame_mark)
+	OpenSave.shader_copied.connect(_load_shader_file)
 	_setup_file_menu()
 	_setup_edit_menu()
 	_setup_view_menu()
 	_setup_window_menu()
 	_setup_image_menu()
+	_setup_effects_menu()
 	_setup_select_menu()
 	_setup_help_menu()
+
+
+func _input(event: InputEvent) -> void:
+	# Workaround for https://github.com/Orama-Interactive/Pixelorama/issues/1070
+	if event is InputEventMouseButton and event.pressed:
+		file_menu.activate_item_by_event(event)
+		edit_menu.activate_item_by_event(event)
+		select_menu.activate_item_by_event(event)
+		image_menu.activate_item_by_event(event)
+		effects_menu.activate_item_by_event(event)
+		view_menu.activate_item_by_event(event)
+		window_menu.activate_item_by_event(event)
+		help_menu.activate_item_by_event(event)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and Global.current_project != null:
+		_update_file_menu_buttons(Global.current_project)
+
+
+func _project_switched() -> void:
+	var project := Global.current_project
+	edit_menu.set_item_disabled(Global.EditMenu.NEW_BRUSH, not project.has_selection)
+	_update_file_menu_buttons(project)
+	for j in Tiles.MODE.values():
+		tile_mode_submenu.set_item_checked(j, j == project.tiles.mode)
+	_check_color_mode_submenu_item(project)
+
+	_update_current_frame_mark()
+
+
+func _update_file_menu_buttons(project: Project) -> void:
+	if project.export_directory_path.is_empty():
+		file_menu.set_item_text(Global.FileMenu.SAVE, tr("Save"))
+	else:
+		file_menu.set_item_text(Global.FileMenu.SAVE, tr("Save") + " %s" % project.file_name)
+	if project.was_exported:
+		var f_name := " %s" % (project.file_name + Export.file_format_string(project.file_format))
+		if project.export_overwrite:
+			file_menu.set_item_text(Global.FileMenu.EXPORT, tr("Overwrite") + f_name)
+		else:
+			file_menu.set_item_text(Global.FileMenu.EXPORT, tr("Export") + f_name)
+	else:
+		file_menu.set_item_text(Global.FileMenu.EXPORT, tr("Export"))
+
+
+func _update_current_frame_mark() -> void:
+	var project := Global.current_project
+	current_frame_mark.text = "%s/%s" % [str(project.current_frame + 1), project.frames.size()]
 
 
 func _setup_file_menu() -> void:
@@ -59,14 +170,12 @@ func _setup_file_menu() -> void:
 		"Export as...": "export_file_as",
 		"Quit": "quit",
 	}
-	file_menu = file_menu_button.get_popup()
 	var i := 0
 	for item in file_menu_items:
 		if item == "Recent projects":
 			_setup_recent_projects_submenu(item)
 		else:
-			file_menu.add_item(item, i)
-			_set_menu_shortcut(file_menu_items[item], file_menu, i)
+			_set_menu_shortcut(file_menu_items[item], file_menu, i, item)
 		i += 1
 
 	file_menu.id_pressed.connect(file_menu_id_pressed)
@@ -77,6 +186,7 @@ func _setup_file_menu() -> void:
 
 
 func _setup_recent_projects_submenu(item: String) -> void:
+	recent_projects_submenu.name = "RecentProjectsPopupMenu"
 	recent_projects = Global.config_cache.get_value("data", "recent_projects", [])
 	recent_projects_submenu.id_pressed.connect(_on_recent_projects_submenu_id_pressed)
 	update_recent_projects_submenu()
@@ -105,11 +215,12 @@ func _setup_edit_menu() -> void:
 		"New Brush": "new_brush",
 		"Preferences": "preferences"
 	}
-	var edit_menu: PopupMenu = edit_menu_button.get_popup()
 	var i := 0
 	for item in edit_menu_items:
-		edit_menu.add_item(item, i)
-		_set_menu_shortcut(edit_menu_items[item], edit_menu, i)
+		var echo := false
+		if item in ["Undo", "Redo"]:
+			echo = true
+		_set_menu_shortcut(edit_menu_items[item], edit_menu, i, item, false, echo)
 		i += 1
 
 	edit_menu.set_item_disabled(Global.EditMenu.NEW_BRUSH, true)
@@ -119,18 +230,20 @@ func _setup_edit_menu() -> void:
 func _setup_view_menu() -> void:
 	# Order as in Global.ViewMenu enum
 	var view_menu_items := {
+		"Center Canvas": "center_canvas",
 		"Tile Mode": "",
 		"Tile Mode Offsets": "",
 		"Grayscale View": "",
 		"Mirror View": "mirror_view",
 		"Show Grid": "show_grid",
 		"Show Pixel Grid": "show_pixel_grid",
+		"Show Pixel Indices": "show_pixel_indices",
 		"Show Rulers": "show_rulers",
 		"Show Guides": "show_guides",
 		"Show Mouse Guides": "",
+		"Display Layer Effects": &"display_layer_effects",
 		"Snap To": "",
 	}
-	view_menu = view_menu_button.get_popup()
 	for i in view_menu_items.size():
 		var item: String = view_menu_items.keys()[i]
 		if item == "Tile Mode":
@@ -139,40 +252,70 @@ func _setup_view_menu() -> void:
 			_setup_snap_to_submenu(item)
 		elif item == "Tile Mode Offsets":
 			view_menu.add_item(item, i)
+		elif item == "Center Canvas":
+			_set_menu_shortcut(view_menu_items[item], view_menu, i, item)
 		else:
-			view_menu.add_check_item(item, i)
-			_set_menu_shortcut(view_menu_items[item], view_menu, i)
+			_set_menu_shortcut(view_menu_items[item], view_menu, i, item, true)
 	view_menu.set_item_checked(Global.ViewMenu.SHOW_RULERS, true)
 	view_menu.set_item_checked(Global.ViewMenu.SHOW_GUIDES, true)
+	view_menu.set_item_checked(Global.ViewMenu.DISPLAY_LAYER_EFFECTS, true)
 	view_menu.hide_on_checkable_item_selection = false
 	view_menu.id_pressed.connect(view_menu_id_pressed)
 
+	# Load settings from the config file
 	var draw_grid: bool = Global.config_cache.get_value("view_menu", "draw_grid", Global.draw_grid)
-	if draw_grid != Global.draw_grid:
-		_toggle_show_grid()
-
 	var draw_pixel_grid: bool = Global.config_cache.get_value(
 		"view_menu", "draw_pixel_grid", Global.draw_pixel_grid
 	)
-	if draw_pixel_grid != Global.draw_pixel_grid:
-		_toggle_show_pixel_grid()
-
+	var show_pixel_indices: bool = Global.config_cache.get_value(
+		"view_menu", "show_pixel_indices", Global.show_pixel_indices
+	)
 	var show_rulers: bool = Global.config_cache.get_value(
 		"view_menu", "show_rulers", Global.show_rulers
 	)
-	if show_rulers != Global.show_rulers:
-		_toggle_show_rulers()
-
 	var show_guides: bool = Global.config_cache.get_value(
 		"view_menu", "show_guides", Global.show_guides
 	)
 	var show_mouse_guides: bool = Global.config_cache.get_value(
 		"view_menu", "show_mouse_guides", Global.show_mouse_guides
 	)
+	var display_layer_effects: bool = Global.config_cache.get_value(
+		"view_menu", "display_layer_effects", Global.display_layer_effects
+	)
+	var snap_to_rectangular_grid_boundary: bool = Global.config_cache.get_value(
+		"view_menu", "snap_to_rectangular_grid_boundary", Global.snap_to_rectangular_grid_boundary
+	)
+	var snap_to_rectangular_grid_center: bool = Global.config_cache.get_value(
+		"view_menu", "snap_to_rectangular_grid_center", Global.snap_to_rectangular_grid_center
+	)
+	var snap_to_guides: bool = Global.config_cache.get_value(
+		"view_menu", "snap_to_guides", Global.snap_to_guides
+	)
+	var snap_to_perspective_guides: bool = Global.config_cache.get_value(
+		"view_menu", "snap_to_perspective_guides", Global.snap_to_perspective_guides
+	)
+	if draw_grid != Global.draw_grid:
+		_toggle_show_grid()
+	if draw_pixel_grid != Global.draw_pixel_grid:
+		_toggle_show_pixel_grid()
+	if show_rulers != Global.show_rulers:
+		_toggle_show_rulers()
 	if show_guides != Global.show_guides:
 		_toggle_show_guides()
 	if show_mouse_guides != Global.show_mouse_guides:
 		_toggle_show_mouse_guides()
+	if show_pixel_indices != Global.show_pixel_indices:
+		_toggle_show_pixel_indices()
+	if display_layer_effects != Global.display_layer_effects:
+		Global.display_layer_effects = display_layer_effects
+	if snap_to_rectangular_grid_boundary != Global.snap_to_rectangular_grid_boundary:
+		_snap_to_submenu_id_pressed(0)
+	if snap_to_rectangular_grid_center != Global.snap_to_rectangular_grid_center:
+		_snap_to_submenu_id_pressed(1)
+	if snap_to_guides != Global.snap_to_guides:
+		_snap_to_submenu_id_pressed(2)
+	if snap_to_perspective_guides != Global.snap_to_perspective_guides:
+		_snap_to_submenu_id_pressed(3)
 
 
 func _setup_tile_mode_submenu(item: String) -> void:
@@ -210,7 +353,6 @@ func _setup_window_menu() -> void:
 		"Zen Mode": "zen_mode",
 		"Fullscreen Mode": "toggle_fullscreen",
 	}
-	window_menu = window_menu_button.get_popup()
 	var i := 0
 	for item in window_menu_items:
 		if item == "Panels":
@@ -220,8 +362,7 @@ func _setup_window_menu() -> void:
 		elif item == "Window Opacity":
 			window_menu.add_item(item, i)
 		else:
-			window_menu.add_check_item(item, i)
-			_set_menu_shortcut(window_menu_items[item], window_menu, i)
+			_set_menu_shortcut(window_menu_items[item], window_menu, i, item, true)
 		i += 1
 	window_menu.hide_on_checkable_item_selection = false
 	window_menu.id_pressed.connect(window_menu_id_pressed)
@@ -236,9 +377,13 @@ func _setup_panels_submenu(item: String) -> void:
 	panels_submenu.set_name("panels_submenu")
 	panels_submenu.hide_on_checkable_item_selection = false
 	for element in ui_elements:
-		panels_submenu.add_check_item(element.name)
-		var is_hidden: bool = ui.is_control_hidden(element)
-		panels_submenu.set_item_checked(ui_elements.find(element), !is_hidden)
+		if element.name == "Tiles":
+			continue
+		var id := ui_elements.find(element)
+		panels_submenu.add_check_item(element.name, id)
+		var is_hidden: bool = main_ui.is_control_hidden(element)
+		var index := panels_submenu.get_item_index(id)
+		panels_submenu.set_item_checked(index, !is_hidden)
 
 	panels_submenu.id_pressed.connect(_panels_submenu_id_pressed)
 	window_menu.add_child(panels_submenu)
@@ -246,18 +391,6 @@ func _setup_panels_submenu(item: String) -> void:
 
 
 func _setup_layouts_submenu(item: String) -> void:
-	var path := "user://layouts"
-	var dir := DirAccess.open(path)
-	if DirAccess.get_open_error() == OK:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			if !dir.current_is_dir():
-				var file_name_no_tres: String = file_name.get_basename()
-				layouts.append([file_name_no_tres, ResourceLoader.load(path.path_join(file_name))])
-			file_name = dir.get_next()
-		dir.list_dir_end()
-
 	layouts_submenu.set_name("layouts_submenu")
 	layouts_submenu.hide_on_checkable_item_selection = false
 	populate_layouts_submenu()
@@ -266,24 +399,53 @@ func _setup_layouts_submenu(item: String) -> void:
 	window_menu.add_child(layouts_submenu)
 	window_menu.add_submenu_item(item, layouts_submenu.get_name())
 
-	var saved_layout = Global.config_cache.get_value("window", "layout", 0)
+	var saved_layout: int = Global.config_cache.get_value("window", "layout", 0)
 	set_layout(saved_layout)
 
 
 func populate_layouts_submenu() -> void:
 	layouts_submenu.clear()  # Does not do anything if it's called for the first time
 	layouts_submenu.add_item("Manage Layouts", 0)
-	for layout in layouts:
-		layouts_submenu.add_radio_check_item(layout[0])
+	for layout in Global.layouts:
+		var layout_name := layout.resource_path.get_basename().get_file()
+		layouts_submenu.add_radio_check_item(layout_name)
 
 
 func _setup_image_menu() -> void:
 	# Order as in Global.ImageMenu enum
 	var image_menu_items := {
+		"Project Properties": "project_properties",
+		"Color Mode": "",
 		"Resize Canvas": "resize_canvas",
-		"Offset Image": "offset_image",
 		"Scale Image": "scale_image",
-		"Crop Image": "crop_image",
+		"Crop to Selection": "crop_to_selection",
+		"Crop to Content": "crop_to_content",
+	}
+	for i in image_menu_items.size():
+		var item: String = image_menu_items.keys()[i]
+		if item == "Color Mode":
+			_setup_color_mode_submenu(item)
+		else:
+			_set_menu_shortcut(image_menu_items[item], image_menu, i, item)
+	image_menu.set_item_disabled(Global.ImageMenu.CROP_TO_SELECTION, true)
+	image_menu.id_pressed.connect(image_menu_id_pressed)
+
+
+func _setup_color_mode_submenu(item: String) -> void:
+	color_mode_submenu.set_name("color_mode_submenu")
+	color_mode_submenu.add_radio_check_item("RGBA", ColorModes.RGBA)
+	color_mode_submenu.set_item_checked(ColorModes.RGBA, true)
+	color_mode_submenu.add_radio_check_item("Indexed", ColorModes.INDEXED)
+
+	color_mode_submenu.id_pressed.connect(_color_mode_submenu_id_pressed)
+	image_menu.add_child(color_mode_submenu)
+	image_menu.add_submenu_item(item, color_mode_submenu.get_name())
+
+
+func _setup_effects_menu() -> void:
+	# Order as in Global.EffectMenu enum
+	var menu_items := {
+		"Offset Image": "offset_image",
 		"Mirror Image": "mirror_image",
 		"Rotate Image": "rotate_image",
 		"Outline": "outline",
@@ -291,19 +453,51 @@ func _setup_image_menu() -> void:
 		"Invert Colors": "invert_colors",
 		"Desaturation": "desaturation",
 		"Adjust Hue/Saturation/Value": "adjust_hsv",
+		"Adjust Brightness/Contrast": "adjust_brightness_contrast",
+		"Color Curves": "color_curves",
+		"Palettize": "palettize",
+		"Pixelize": "pixelize",
 		"Posterize": "posterize",
+		"Gaussian Blur": "gaussian_blur",
 		"Gradient": "gradient",
 		"Gradient Map": "gradient_map",
-		# "Shader": ""
+		"Loaded": ""
 	}
-	var image_menu: PopupMenu = image_menu_button.get_popup()
 	var i := 0
-	for item in image_menu_items:
-		image_menu.add_item(item, i)
-		_set_menu_shortcut(image_menu_items[item], image_menu, i)
+	for item in menu_items:
+		if item == "Loaded":
+			_setup_loaded_effects_submenu()
+		else:
+			_set_menu_shortcut(menu_items[item], effects_menu, i, item)
 		i += 1
+	effects_menu.id_pressed.connect(effects_menu_id_pressed)
 
-	image_menu.id_pressed.connect(image_menu_id_pressed)
+
+func _setup_loaded_effects_submenu() -> void:
+	if not DirAccess.dir_exists_absolute(OpenSave.SHADERS_DIRECTORY):
+		DirAccess.make_dir_recursive_absolute(OpenSave.SHADERS_DIRECTORY)
+	var shader_files := DirAccess.get_files_at(OpenSave.SHADERS_DIRECTORY)
+	if shader_files.size() == 0:
+		return
+	for shader_file in shader_files:
+		_load_shader_file(OpenSave.SHADERS_DIRECTORY.path_join(shader_file))
+
+
+func _load_shader_file(file_path: String) -> void:
+	var file := load(file_path)
+	if file is not Shader:
+		return
+	var effect_name := file_path.get_file().get_basename()
+	if not is_instance_valid(loaded_effects_submenu):
+		loaded_effects_submenu = PopupMenu.new()
+		loaded_effects_submenu.set_name("loaded_effects_submenu")
+		loaded_effects_submenu.id_pressed.connect(_loaded_effects_submenu_id_pressed)
+		effects_menu.add_child(loaded_effects_submenu)
+		effects_menu.add_submenu_item("Loaded", loaded_effects_submenu.get_name())
+	loaded_effects_submenu.add_item(effect_name)
+	var effect_index := loaded_effects_submenu.item_count - 1
+	loaded_effects_submenu.set_item_metadata(effect_index, file)
+	loaded_effect_dialogs.append(Dialog.new("res://src/UI/Dialogs/ImageEffects/ShaderEffect.tscn"))
 
 
 func _setup_select_menu() -> void:
@@ -312,17 +506,28 @@ func _setup_select_menu() -> void:
 		"All": "select_all",
 		"Clear": "clear_selection",
 		"Invert": "invert_selection",
-		"Tile Mode": ""
+		"Wrap Strokes": "",
+		"Modify": ""
 	}
-	var select_menu: PopupMenu = select_menu_button.get_popup()
 	for i in select_menu_items.size():
 		var item: String = select_menu_items.keys()[i]
-		if item == "Tile Mode":
+		if item == "Wrap Strokes":
 			select_menu.add_check_item(item, i)
+		elif item == "Modify":
+			_setup_selection_modify_submenu(item)
 		else:
-			select_menu.add_item(item, i)
-			_set_menu_shortcut(select_menu_items[item], select_menu, i)
+			_set_menu_shortcut(select_menu_items[item], select_menu, i, item)
 	select_menu.id_pressed.connect(select_menu_id_pressed)
+
+
+func _setup_selection_modify_submenu(item: String) -> void:
+	selection_modify_submenu.set_name("selection_modify_submenu")
+	selection_modify_submenu.add_item("Expand")
+	selection_modify_submenu.add_item("Shrink")
+	selection_modify_submenu.add_item("Border")
+	selection_modify_submenu.id_pressed.connect(_selection_modify_submenu_id_pressed)
+	select_menu.add_child(selection_modify_submenu)
+	select_menu.add_submenu_item(item, selection_modify_submenu.get_name())
 
 
 func _setup_help_menu() -> void:
@@ -331,50 +536,78 @@ func _setup_help_menu() -> void:
 		"View Splash Screen": "view_splash_screen",
 		"Online Docs": "open_docs",
 		"Issue Tracker": "issue_tracker",
-		"Open Logs Folder": "open_logs_folder",
+		"Open Editor Data Folder": "open_editor_data_folder",
 		"Changelog": "changelog",
 		"About Pixelorama": "about_pixelorama",
+		"Support Pixelorama's Development": &"",
 	}
-	var help_menu: PopupMenu = help_menu_button.get_popup()
 	var i := 0
 	for item in help_menu_items:
-		help_menu.add_item(item, i)
-		_set_menu_shortcut(help_menu_items[item], help_menu, i)
+		var icon: Texture2D = null
+		if (
+			i == Global.HelpMenu.ONLINE_DOCS
+			or i == Global.HelpMenu.ISSUE_TRACKER
+			or i == Global.HelpMenu.CHANGELOG
+		):
+			icon = EXTERNAL_LINK_ICON
+		if i == Global.HelpMenu.ABOUT_PIXELORAMA:
+			icon = PIXELORAMA_ICON
+		elif i == Global.HelpMenu.SUPPORT_PIXELORAMA:
+			icon = HEART_ICON
+		_set_menu_shortcut(help_menu_items[item], help_menu, i, item, false, false, icon)
+
 		i += 1
 
 	help_menu.id_pressed.connect(help_menu_id_pressed)
 
 
-func _set_menu_shortcut(action: String, menu: PopupMenu, index: int) -> void:
+func _set_menu_shortcut(
+	action: StringName,
+	menu: PopupMenu,
+	index: int,
+	text: String,
+	is_check := false,
+	echo := false,
+	icon: Texture2D = null
+) -> void:
 	if action.is_empty():
-		return
-	var shortcut := Shortcut.new()
-	var event := InputEventAction.new()
-	event.action = action
-	shortcut.events.append(event)
-	menu.set_item_shortcut(index, shortcut)
+		if is_check:
+			menu.add_check_item(text, index)
+		else:
+			menu.add_item(text, index)
+	else:
+		var shortcut := Shortcut.new()
+		var event := InputEventAction.new()
+		event.action = action
+		shortcut.events.append(event)
+		if is_check:
+			menu.add_check_shortcut(shortcut, index)
+		else:
+			menu.add_shortcut(shortcut, index, false, echo)
+		menu.set_item_text(index, text)
+	if is_instance_valid(icon):
+		menu.set_item_icon(index, icon)
 
 
-func _handle_metadata(id: int, menu_button: MenuButton) -> void:
+func _handle_metadata(id: int, popup_menu: PopupMenu) -> void:
 	# Used for extensions that want to add extra menu items
-	var metadata = menu_button.get_popup().get_item_metadata(id)
+	var metadata = popup_menu.get_item_metadata(id)
 	if metadata:
 		if metadata is Object:
-			if metadata.has_method("menu_item_clicked"):
-				metadata.call("menu_item_clicked")
+			if metadata.has_method(&"menu_item_clicked"):
+				metadata.call(&"menu_item_clicked")
 
 
 func _popup_dialog(dialog: Window, dialog_size := Vector2i.ZERO) -> void:
 	dialog.popup_centered(dialog_size)
-	Global.dialog_open(true)
+	var is_file_dialog := dialog is FileDialog
+	Global.dialog_open(true, is_file_dialog)
 
 
 func file_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
 		Global.FileMenu.NEW:
-			_on_new_project_file_menu_option_pressed()
+			new_image_dialog.popup()
 		Global.FileMenu.OPEN:
 			_open_project_file()
 		Global.FileMenu.OPEN_LAST_PROJECT:
@@ -382,7 +615,7 @@ func file_menu_id_pressed(id: int) -> void:
 		Global.FileMenu.SAVE:
 			_save_project_file()
 		Global.FileMenu.SAVE_AS:
-			_save_project_file_as()
+			Global.control.show_save_dialog()
 		Global.FileMenu.EXPORT:
 			_export_file()
 		Global.FileMenu.EXPORT_AS:
@@ -390,51 +623,36 @@ func file_menu_id_pressed(id: int) -> void:
 		Global.FileMenu.QUIT:
 			Global.control.show_quit_dialog()
 		_:
-			_handle_metadata(id, file_menu_button)
-
-
-func _on_new_project_file_menu_option_pressed() -> void:
-	new_image_dialog.popup_centered()
-	Global.dialog_open(true)
+			_handle_metadata(id, file_menu)
 
 
 func _open_project_file() -> void:
 	if OS.get_name() == "Web":
 		Html5FileExchange.load_image()
 	else:
-		_popup_dialog(Global.open_sprites_dialog)
+		_popup_dialog(Global.control.open_sprite_dialog)
 		Global.control.opensprite_file_selected = false
 
 
 func _on_open_last_project_file_menu_option_pressed() -> void:
-	if Global.config_cache.has_section_key("preferences", "last_project_path"):
+	if Global.config_cache.has_section_key("data", "last_project_path"):
 		Global.control.load_last_project()
 	else:
-		Global.error_dialog.set_text("You haven't saved or opened any project in Pixelorama yet!")
-		_popup_dialog(Global.error_dialog)
+		Global.popup_error("You haven't saved or opened any project in Pixelorama yet!")
 
 
 func _save_project_file() -> void:
-	var path: String = OpenSave.current_save_paths[Global.current_project_index]
+	if Global.current_project is ResourceProject:
+		Global.current_project.resource_updated.emit(Global.current_project)
+		if Global.current_project.has_changed:
+			Global.current_project.has_changed = false
+		Global.notification_label("Resource Updated")
+		return
+	var path: String = Global.current_project.save_path
 	if path == "":
-		_save_project_file_as()
+		Global.control.show_save_dialog()
 	else:
 		Global.control.save_project(path)
-
-
-func _save_project_file_as() -> void:
-	Global.dialog_open(true)
-	if OS.get_name() == "Web":
-		var save_dialog: ConfirmationDialog = Global.save_sprites_html5_dialog
-		var save_filename = save_dialog.get_node("FileNameContainer/FileNameLineEdit")
-		save_dialog.popup_centered()
-		save_filename.text = Global.current_project.name
-	else:
-		Global.save_sprites_dialog.get_ok_button().text = "Save"
-		Global.save_sprites_dialog.popup_centered()
-		await get_tree().process_frame
-		await get_tree().process_frame
-		Global.save_sprites_dialog.get_line_edit().text = Global.current_project.name
 
 
 func _export_file() -> void:
@@ -451,8 +669,6 @@ func _on_recent_projects_submenu_id_pressed(id: int) -> void:
 
 
 func edit_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
 		Global.EditMenu.UNDO:
 			Global.current_project.commit_undo()
@@ -471,17 +687,17 @@ func edit_menu_id_pressed(id: int) -> void:
 		Global.EditMenu.NEW_BRUSH:
 			Global.canvas.selection.new_brush()
 		Global.EditMenu.PREFERENCES:
-			_popup_dialog(Global.preferences_dialog)
+			preferences_dialog.popup()
 		_:
-			_handle_metadata(id, edit_menu_button)
+			_handle_metadata(id, edit_menu)
 
 
 func view_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
+		Global.ViewMenu.CENTER_CANVAS:
+			Global.camera.offset = Global.current_project.size / 2
 		Global.ViewMenu.TILE_MODE_OFFSETS:
-			_popup_dialog(Global.control.get_node("Dialogs/TileModeOffsetsDialog"))
+			_popup_dialog(get_tree().current_scene.tile_mode_offsets_dialog)
 		Global.ViewMenu.GREYSCALE_VIEW:
 			_toggle_greyscale_view()
 		Global.ViewMenu.MIRROR_VIEW:
@@ -496,27 +712,29 @@ func view_menu_id_pressed(id: int) -> void:
 			_toggle_show_guides()
 		Global.ViewMenu.SHOW_MOUSE_GUIDES:
 			_toggle_show_mouse_guides()
+		Global.ViewMenu.SHOW_PIXEL_INDICES:
+			_toggle_show_pixel_indices()
+		Global.ViewMenu.DISPLAY_LAYER_EFFECTS:
+			Global.display_layer_effects = not Global.display_layer_effects
 		_:
-			_handle_metadata(id, view_menu_button)
+			_handle_metadata(id, view_menu)
 
 	Global.canvas.queue_redraw()
 
 
 func window_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
 		Global.WindowMenu.WINDOW_OPACITY:
-			_popup_dialog(window_opacity_dialog)
+			window_opacity_dialog.popup()
 		Global.WindowMenu.MOVABLE_PANELS:
-			ui.tabs_visible = !ui.tabs_visible
-			window_menu.set_item_checked(id, ui.tabs_visible)
+			main_ui.hide_single_tab = not main_ui.hide_single_tab
+			window_menu.set_item_checked(id, not main_ui.hide_single_tab)
 		Global.WindowMenu.ZEN_MODE:
 			_toggle_zen_mode()
 		Global.WindowMenu.FULLSCREEN_MODE:
 			_toggle_fullscreen()
 		_:
-			_handle_metadata(id, window_menu_button)
+			_handle_metadata(id, window_menu)
 
 
 func _tile_mode_submenu_id_pressed(id: Tiles.MODE) -> void:
@@ -527,7 +745,48 @@ func _tile_mode_submenu_id_pressed(id: Tiles.MODE) -> void:
 	Global.canvas.tile_mode.queue_redraw()
 	Global.canvas.pixel_grid.queue_redraw()
 	Global.canvas.grid.queue_redraw()
-	Global.tile_mode_offset_dialog.change_mask()
+	get_tree().current_scene.tile_mode_offsets_dialog.change_mask()
+
+
+func _selection_modify_submenu_id_pressed(id: int) -> void:
+	modify_selection.popup()
+	modify_selection.node.type = id
+
+
+func _color_mode_submenu_id_pressed(id: ColorModes) -> void:
+	var project := Global.current_project
+	var old_color_mode := project.color_mode
+	var redo_data := {}
+	var undo_data := {}
+	var pixel_cels: Array[BaseCel]
+	# We need to do it this way because Godot
+	# doesn't like casting typed arrays into other types.
+	for cel in project.get_all_pixel_cels():
+		pixel_cels.append(cel)
+	project.serialize_cel_undo_data(pixel_cels, undo_data)
+	# Change the color mode directly before undo/redo in order to affect the images,
+	# so we can store them as redo data.
+	if id == ColorModes.RGBA:
+		project.color_mode = Image.FORMAT_RGBA8
+	else:
+		project.color_mode = Project.INDEXED_MODE
+	project.update_tilemaps(undo_data, TileSetPanel.TileEditingMode.AUTO)
+	project.serialize_cel_undo_data(pixel_cels, redo_data)
+	project.undo_redo.create_action("Change color mode")
+	project.undos += 1
+	project.undo_redo.add_do_property(project, "color_mode", project.color_mode)
+	project.undo_redo.add_undo_property(project, "color_mode", old_color_mode)
+	project.deserialize_cel_undo_data(redo_data, undo_data)
+	project.undo_redo.add_do_method(_check_color_mode_submenu_item.bind(project))
+	project.undo_redo.add_undo_method(_check_color_mode_submenu_item.bind(project))
+	project.undo_redo.add_do_method(Global.undo_or_redo.bind(false))
+	project.undo_redo.add_undo_method(Global.undo_or_redo.bind(true))
+	project.undo_redo.commit_action()
+
+
+func _check_color_mode_submenu_item(project: Project) -> void:
+	color_mode_submenu.set_item_checked(ColorModes.RGBA, project.color_mode == Image.FORMAT_RGBA8)
+	color_mode_submenu.set_item_checked(ColorModes.INDEXED, project.is_indexed())
 
 
 func _snap_to_submenu_id_pressed(id: int) -> void:
@@ -545,50 +804,53 @@ func _snap_to_submenu_id_pressed(id: int) -> void:
 		snap_to_submenu.set_item_checked(id, Global.snap_to_perspective_guides)
 
 
+func _loaded_effects_submenu_id_pressed(id: int) -> void:
+	var dialog := loaded_effect_dialogs[id]
+	if is_instance_valid(dialog.node):
+		dialog.popup()
+	else:
+		dialog.instantiate_scene()
+		var shader := loaded_effects_submenu.get_item_metadata(id) as Shader
+		dialog.node.change_shader(shader, loaded_effects_submenu.get_item_text(id))
+		dialog.popup()
+
+
 func _panels_submenu_id_pressed(id: int) -> void:
 	if zen_mode:
 		return
-
-	var element_visible := panels_submenu.is_item_checked(id)
-	ui.set_control_hidden(ui_elements[id], element_visible)
-	panels_submenu.set_item_checked(id, !element_visible)
-	if ui.tabs_visible == false:
-		ui.tabs_visible = true
-		await get_tree().process_frame
-		await get_tree().process_frame
-		ui.tabs_visible = false
+	var index := panels_submenu.get_item_index(id)
+	var element_visible := panels_submenu.is_item_checked(index)
+	main_ui.set_control_hidden(ui_elements[id], element_visible)
+	panels_submenu.set_item_checked(index, !element_visible)
 
 
 func _layouts_submenu_id_pressed(id: int) -> void:
 	if id == 0:
-		_popup_dialog(Global.control.get_node("Dialogs/ManageLayouts"))
+		manage_layouts_dialog.popup()
 	else:
 		set_layout(id - 1)
 
 
 func set_layout(id: int) -> void:
-	if id >= layouts.size():
+	if Global.layouts.size() == 0:
+		return
+	if id >= Global.layouts.size():
 		id = 0
 	selected_layout = id
-	ui.layout = layouts[id][1].clone()  # Clone is needed to avoid modifying premade layouts
-	for i in layouts.size():
+	main_ui.layout = Global.layouts[id]
+	for i in Global.layouts.size():
 		var offset := i + 1
 		layouts_submenu.set_item_checked(offset, offset == (id + 1))
 
 	for i in ui_elements.size():
-		var is_hidden := ui.is_control_hidden(ui_elements[i])
-		panels_submenu.set_item_checked(i, !is_hidden)
+		var index := panels_submenu.get_item_index(i)
+		var is_hidden := main_ui.is_control_hidden(ui_elements[i])
+		panels_submenu.set_item_checked(index, !is_hidden)
 
 	if zen_mode:  # Turn zen mode off
 		Global.control.find_child("TabsContainer").visible = true
 		zen_mode = false
 		window_menu.set_item_checked(Global.WindowMenu.ZEN_MODE, false)
-
-	# Hacky but without 2 idle frames it doesn't work properly. Should be replaced eventually
-	await get_tree().process_frame
-	await get_tree().process_frame
-	# Call set_tabs_visible to keep tabs visible if there are 2 or more in the same panel
-	ui.tabs_visible = ui.tabs_visible
 
 
 func _toggle_greyscale_view() -> void:
@@ -623,11 +885,14 @@ func _toggle_show_pixel_grid() -> void:
 	view_menu.set_item_checked(Global.ViewMenu.SHOW_PIXEL_GRID, Global.draw_pixel_grid)
 
 
+func _toggle_show_pixel_indices() -> void:
+	Global.show_pixel_indices = !Global.show_pixel_indices
+	view_menu.set_item_checked(Global.ViewMenu.SHOW_PIXEL_INDICES, Global.show_pixel_indices)
+
+
 func _toggle_show_rulers() -> void:
 	Global.show_rulers = !Global.show_rulers
 	view_menu.set_item_checked(Global.ViewMenu.SHOW_RULERS, Global.show_rulers)
-	Global.horizontal_ruler.visible = Global.show_rulers
-	Global.vertical_ruler.visible = Global.show_rulers
 
 
 func _toggle_show_guides() -> void:
@@ -639,8 +904,12 @@ func _toggle_show_guides() -> void:
 			if guide is SymmetryGuide:
 				if guide.type == Guide.Types.HORIZONTAL:
 					guide.visible = Global.show_x_symmetry_axis and Global.show_guides
-				else:
+				elif guide.type == Guide.Types.VERTICAL:
 					guide.visible = Global.show_y_symmetry_axis and Global.show_guides
+				elif guide.type == Guide.Types.XY:
+					guide.visible = Global.show_xy_symmetry_axis and Global.show_guides
+				elif guide.type == Guide.Types.X_MINUS_Y:
+					guide.visible = Global.show_x_minus_y_symmetry_axis and Global.show_guides
 
 
 func _toggle_show_mouse_guides() -> void:
@@ -654,95 +923,83 @@ func _toggle_show_mouse_guides() -> void:
 
 func _toggle_zen_mode() -> void:
 	for i in ui_elements.size():
-		if ui_elements[i].name == "Main Canvas":
+		var index := panels_submenu.get_item_index(i)
+		var panel_name := ui_elements[i].name
+		if panel_name == "Main Canvas" or panel_name == "Tiles":
 			continue
-		if !panels_submenu.is_item_checked(i):
+		if !panels_submenu.is_item_checked(index):
 			continue
-		ui.set_control_hidden(ui_elements[i], !zen_mode)
+		main_ui.set_control_hidden(ui_elements[i], !zen_mode)
 	Global.control.find_child("TabsContainer").visible = zen_mode
 	zen_mode = !zen_mode
 	window_menu.set_item_checked(Global.WindowMenu.ZEN_MODE, zen_mode)
 
 
 func _toggle_fullscreen() -> void:
-	get_window().mode = (
-		Window.MODE_EXCLUSIVE_FULLSCREEN
-		if (!(
-			(get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN)
-			or (get_window().mode == Window.MODE_FULLSCREEN)
-		))
-		else Window.MODE_WINDOWED
-	)
-	window_menu.set_item_checked(
-		Global.WindowMenu.FULLSCREEN_MODE,
-		(
-			(get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN)
-			or (get_window().mode == Window.MODE_FULLSCREEN)
-		)
-	)
-	if (
+	var is_fullscreen := (
 		(get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN)
 		or (get_window().mode == Window.MODE_FULLSCREEN)
-	):  # If window is fullscreen then reset transparency
-		window_opacity_dialog.set_window_opacity(100.0)
+	)
+	get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if !is_fullscreen else Window.MODE_WINDOWED
+	is_fullscreen = not is_fullscreen
+	window_menu.set_item_checked(Global.WindowMenu.FULLSCREEN_MODE, is_fullscreen)
 
 
 func image_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
+		Global.ImageMenu.PROJECT_PROPERTIES:
+			project_properties_dialog.popup()
 		Global.ImageMenu.SCALE_IMAGE:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/ScaleImage"))
-
-		Global.ImageMenu.OFFSET_IMAGE:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/OffsetImage"))
-
-		Global.ImageMenu.CROP_IMAGE:
-			DrawingAlgos.crop_image()
-
+			scale_image_dialog.popup()
+		Global.ImageMenu.CROP_TO_SELECTION:
+			DrawingAlgos.crop_to_selection()
+		Global.ImageMenu.CROP_TO_CONTENT:
+			DrawingAlgos.crop_to_content()
 		Global.ImageMenu.RESIZE_CANVAS:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/ResizeCanvas"))
-
-		Global.ImageMenu.FLIP:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/FlipImageDialog"))
-
-		Global.ImageMenu.ROTATE:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/RotateImage"))
-
-		Global.ImageMenu.INVERT_COLORS:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/InvertColorsDialog"))
-
-		Global.ImageMenu.DESATURATION:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/DesaturateDialog"))
-
-		Global.ImageMenu.OUTLINE:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/OutlineDialog"))
-
-		Global.ImageMenu.DROP_SHADOW:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/DropShadowDialog"))
-
-		Global.ImageMenu.HSV:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/HSVDialog"))
-
-		Global.ImageMenu.GRADIENT:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/GradientDialog"))
-
-		Global.ImageMenu.GRADIENT_MAP:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/GradientMapDialog"))
-
-		Global.ImageMenu.POSTERIZE:
-			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/Posterize"))
-
-#		Global.ImageMenu.SHADER:
-#			_popup_dialog(Global.control.get_node("Dialogs/ImageEffects/ShaderEffect"))
-
+			resize_canvas_dialog.popup()
 		_:
-			_handle_metadata(id, image_menu_button)
+			_handle_metadata(id, image_menu)
+
+
+func effects_menu_id_pressed(id: int) -> void:
+	match id:
+		Global.EffectsMenu.OFFSET_IMAGE:
+			offset_image_dialog.popup()
+		Global.EffectsMenu.FLIP:
+			mirror_image_dialog.popup()
+		Global.EffectsMenu.ROTATE:
+			rotate_image_dialog.popup()
+		Global.EffectsMenu.INVERT_COLORS:
+			invert_colors_dialog.popup()
+		Global.EffectsMenu.DESATURATION:
+			desaturate_dialog.popup()
+		Global.EffectsMenu.OUTLINE:
+			outline_dialog.popup()
+		Global.EffectsMenu.DROP_SHADOW:
+			drop_shadow_dialog.popup()
+		Global.EffectsMenu.HSV:
+			hsv_dialog.popup()
+		Global.EffectsMenu.BRIGHTNESS_SATURATION:
+			adjust_brightness_saturation_dialog.popup()
+		Global.EffectsMenu.COLOR_CURVES:
+			color_curves_dialog.popup()
+		Global.EffectsMenu.GAUSSIAN_BLUR:
+			gaussian_blur_dialog.popup()
+		Global.EffectsMenu.GRADIENT:
+			gradient_dialog.popup()
+		Global.EffectsMenu.GRADIENT_MAP:
+			gradient_map_dialog.popup()
+		Global.EffectsMenu.PALETTIZE:
+			palettize_dialog.popup()
+		Global.EffectsMenu.PIXELIZE:
+			pixelize_dialog.popup()
+		Global.EffectsMenu.POSTERIZE:
+			posterize_dialog.popup()
+		_:
+			_handle_metadata(id, effects_menu)
 
 
 func select_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
 		Global.SelectMenu.SELECT_ALL:
 			Global.canvas.selection.select_all()
@@ -750,31 +1007,31 @@ func select_menu_id_pressed(id: int) -> void:
 			Global.canvas.selection.clear_selection(true)
 		Global.SelectMenu.INVERT:
 			Global.canvas.selection.invert()
-		Global.SelectMenu.TILE_MODE:
-			var state = select_menu_button.get_popup().is_item_checked(id)
+		Global.SelectMenu.WRAP_STROKES:
+			var state = select_menu.is_item_checked(id)
 			Global.canvas.selection.flag_tilemode = !state
-			select_menu_button.get_popup().set_item_checked(id, !state)
+			select_menu.set_item_checked(id, !state)
 		_:
-			_handle_metadata(id, select_menu_button)
+			_handle_metadata(id, select_menu)
 
 
 func help_menu_id_pressed(id: int) -> void:
-	if not Global.can_draw:
-		return
 	match id:
 		Global.HelpMenu.VIEW_SPLASH_SCREEN:
-			_popup_dialog(Global.control.get_node("Dialogs/SplashDialog"))
+			_popup_dialog(get_tree().current_scene.splash_dialog)
 		Global.HelpMenu.ONLINE_DOCS:
-			OS.shell_open("https://www.oramainteractive.com/Pixelorama-Docs/")
+			OS.shell_open(DOCS_URL)
+			SteamManager.set_achievement("ACH_ONLINE_DOCS")
 		Global.HelpMenu.ISSUE_TRACKER:
-			OS.shell_open("https://github.com/Orama-Interactive/Pixelorama/issues")
-		Global.HelpMenu.OPEN_LOGS_FOLDER:
-			var dir := DirAccess.open("user://logs")
-			dir.make_dir_recursive("user://logs")  # In case someone deleted it
-			OS.shell_open(ProjectSettings.globalize_path("user://logs"))
+			OS.shell_open(ISSUES_URL)
+		Global.HelpMenu.OPEN_EDITOR_DATA_FOLDER:
+			OS.shell_open(ProjectSettings.globalize_path("user://"))
 		Global.HelpMenu.CHANGELOG:
 			OS.shell_open(CHANGELOG_URL)
 		Global.HelpMenu.ABOUT_PIXELORAMA:
-			_popup_dialog(Global.control.get_node("Dialogs/AboutDialog"))
+			about_dialog.popup()
+		Global.HelpMenu.SUPPORT_PIXELORAMA:
+			OS.shell_open(SUPPORT_URL)
+			SteamManager.set_achievement("ACH_SUPPORT_DEVELOPMENT")
 		_:
-			_handle_metadata(id, help_menu_button)
+			_handle_metadata(id, help_menu)

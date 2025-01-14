@@ -93,10 +93,16 @@ func serialize() -> Dictionary:
 				dict["mesh_ring_segments"] = mesh.ring_segments
 				dict["mesh_rings"] = mesh.rings
 			Type.TEXT:
+				dict["mesh_font_name"] = mesh.font.get_font_name()
 				dict["mesh_text"] = mesh.text
 				dict["mesh_pixel_size"] = mesh.pixel_size
+				dict["mesh_font_size"] = mesh.font_size
+				dict["mesh_depth"] = mesh.depth
+				dict["mesh_offset"] = mesh.offset
 				dict["mesh_curve_step"] = mesh.curve_step
 				dict["mesh_horizontal_alignment"] = mesh.horizontal_alignment
+				dict["mesh_vertical_alignment"] = mesh.vertical_alignment
+				dict["mesh_line_spacing"] = mesh.line_spacing
 	else:
 		dict["light_color"] = node3d_type.light_color
 		dict["light_energy"] = node3d_type.light_energy
@@ -151,10 +157,16 @@ func deserialize(dict: Dictionary) -> void:
 				mesh.ring_segments = dict["mesh_ring_segments"]
 				mesh.rings = dict["mesh_rings"]
 			Type.TEXT:
+				mesh.font = Global.find_font_from_name(dict["mesh_font_name"])
 				mesh.text = dict["mesh_text"]
 				mesh.pixel_size = dict["mesh_pixel_size"]
+				mesh.font_size = dict["mesh_font_size"]
+				mesh.depth = dict["mesh_depth"]
+				mesh.offset = dict["mesh_offset"]
 				mesh.curve_step = dict["mesh_curve_step"]
 				mesh.horizontal_alignment = dict["mesh_horizontal_alignment"]
+				mesh.vertical_alignment = dict["mesh_vertical_alignment"]
+				mesh.line_spacing = dict["mesh_line_spacing"]
 	else:
 		node3d_type.light_color = dict["light_color"]
 		node3d_type.light_energy = dict["light_energy"]
@@ -204,7 +216,7 @@ func _set_type(value: Type) -> void:
 		Type.TEXT:
 			node3d_type = MeshInstance3D.new()
 			var mesh := TextMesh.new()
-			mesh.font = Global.control.theme.default_font
+			mesh.font = Themes.get_font()
 			mesh.text = "Sample"
 			node3d_type.mesh = mesh
 		Type.DIR_LIGHT:

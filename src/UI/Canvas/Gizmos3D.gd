@@ -4,10 +4,11 @@ enum { X, Y, Z }
 
 const ARROW_LENGTH := 14
 const LIGHT_ARROW_LENGTH := 25
-const GIZMO_WIDTH := 1.1
+const GIZMO_WIDTH := 0.4
 const SCALE_CIRCLE_LENGTH := 8
 const SCALE_CIRCLE_RADIUS := 1
 const CHAR_SCALE := 0.16
+const DISAPPEAR_THRESHOLD := 1  ## length of arrow below which system won't draw it (for cleaner UI)
 
 var always_visible := {}  ## Key = Cel3DObject, Value = Texture2D
 var points_per_object := {}  ## Key = Cel3DObject, Value = PackedVector2Array
@@ -29,10 +30,12 @@ var gizmo_rot_x := PackedVector2Array()
 var gizmo_rot_y := PackedVector2Array()
 var gizmo_rot_z := PackedVector2Array()
 
+@onready var canvas := get_parent() as Canvas
+
 
 func _ready() -> void:
 	set_process_input(false)
-	Global.cel_changed.connect(_cel_changed)
+	Global.cel_switched.connect(_cel_switched)
 	Global.camera.zoom_changed.connect(queue_redraw)
 
 
@@ -46,18 +49,18 @@ func get_hovering_gizmo(pos: Vector2) -> int:
 	var rot_y_offset := Geometry2D.offset_polyline(gizmo_rot_y, 1)[0]
 	var rot_z_offset := Geometry2D.offset_polyline(gizmo_rot_z, 1)[0]
 
-	if Geometry2D.point_is_inside_triangle(pos, gizmo_pos_x[0], gizmo_pos_x[1], gizmo_pos_x[2]):
-		return Cel3DObject.Gizmos.X_POS
-	elif Geometry2D.point_is_inside_triangle(pos, gizmo_pos_y[0], gizmo_pos_y[1], gizmo_pos_y[2]):
-		return Cel3DObject.Gizmos.Y_POS
-	elif Geometry2D.point_is_inside_triangle(pos, gizmo_pos_z[0], gizmo_pos_z[1], gizmo_pos_z[2]):
-		return Cel3DObject.Gizmos.Z_POS
-	elif Geometry2D.is_point_in_circle(pos, proj_right_local_scale, SCALE_CIRCLE_RADIUS):
+	if Geometry2D.is_point_in_circle(pos, proj_right_local_scale, SCALE_CIRCLE_RADIUS):
 		return Cel3DObject.Gizmos.X_SCALE
 	elif Geometry2D.is_point_in_circle(pos, proj_up_local_scale, SCALE_CIRCLE_RADIUS):
 		return Cel3DObject.Gizmos.Y_SCALE
 	elif Geometry2D.is_point_in_circle(pos, proj_back_local_scale, SCALE_CIRCLE_RADIUS):
 		return Cel3DObject.Gizmos.Z_SCALE
+	elif Geometry2D.point_is_inside_triangle(pos, gizmo_pos_x[0], gizmo_pos_x[1], gizmo_pos_x[2]):
+		return Cel3DObject.Gizmos.X_POS
+	elif Geometry2D.point_is_inside_triangle(pos, gizmo_pos_y[0], gizmo_pos_y[1], gizmo_pos_y[2]):
+		return Cel3DObject.Gizmos.Y_POS
+	elif Geometry2D.point_is_inside_triangle(pos, gizmo_pos_z[0], gizmo_pos_z[1], gizmo_pos_z[2]):
+		return Cel3DObject.Gizmos.Z_POS
 	elif Geometry2D.is_point_in_polygon(pos, rot_x_offset):
 		return Cel3DObject.Gizmos.X_ROT
 	elif Geometry2D.is_point_in_polygon(pos, rot_y_offset):
@@ -67,7 +70,7 @@ func get_hovering_gizmo(pos: Vector2) -> int:
 	return Cel3DObject.Gizmos.NONE
 
 
-func _cel_changed() -> void:
+func _cel_switched() -> void:
 	queue_redraw()
 	set_process_input(Global.current_project.get_current_cel() is Cel3D)
 
@@ -185,24 +188,27 @@ func _draw() -> void:
 			continue
 		if object.selected:
 			# Draw bounding box outline
-			draw_multiline(points, selected_color, 1.0)
+			draw_multiline(points, selected_color, 0.5)
 			if object.applying_gizmos == Cel3DObject.Gizmos.X_ROT:
-				draw_line(gizmos_origin, Global.canvas.current_pixel, Color.RED)
+				draw_line(gizmos_origin, canvas.current_pixel, Color.RED)
 				continue
 			elif object.applying_gizmos == Cel3DObject.Gizmos.Y_ROT:
-				draw_line(gizmos_origin, Global.canvas.current_pixel, Color.GREEN)
+				draw_line(gizmos_origin, canvas.current_pixel, Color.GREEN)
 				continue
 			elif object.applying_gizmos == Cel3DObject.Gizmos.Z_ROT:
-				draw_line(gizmos_origin, Global.canvas.current_pixel, Color.BLUE)
+				draw_line(gizmos_origin, canvas.current_pixel, Color.BLUE)
 				continue
 			draw_set_transform(gizmos_origin, 0, draw_scale)
 			# Draw position arrows
-			draw_line(Vector2.ZERO, proj_right_local, Color.RED)
-			draw_line(Vector2.ZERO, proj_up_local, Color.GREEN)
-			draw_line(Vector2.ZERO, proj_back_local, Color.BLUE)
-			_draw_arrow(gizmo_pos_x, Color.RED)
-			_draw_arrow(gizmo_pos_y, Color.GREEN)
-			_draw_arrow(gizmo_pos_z, Color.BLUE)
+			if proj_right_local.length() > DISAPPEAR_THRESHOLD:
+				draw_line(Vector2.ZERO, proj_right_local, Color.RED)
+				_draw_arrow(gizmo_pos_x, Color.RED)
+			if proj_up_local.length() > DISAPPEAR_THRESHOLD:
+				draw_line(Vector2.ZERO, proj_up_local, Color.GREEN)
+				_draw_arrow(gizmo_pos_y, Color.GREEN)
+			if proj_back_local.length() > DISAPPEAR_THRESHOLD:
+				draw_line(Vector2.ZERO, proj_back_local, Color.BLUE)
+				_draw_arrow(gizmo_pos_z, Color.BLUE)
 
 			# Draw rotation curves
 			draw_polyline(gizmo_rot_x, Color.RED, GIZMO_WIDTH)
@@ -215,7 +221,7 @@ func _draw() -> void:
 			draw_circle(proj_back_local_scale, SCALE_CIRCLE_RADIUS, Color.BLUE)
 
 			# Draw X, Y, Z characters on top of the scale circles
-			var font: Font = Global.control.theme.default_font
+			var font := Themes.get_font()
 			var font_height := font.get_height()
 			var char_position := Vector2(-font_height, font_height) * CHAR_SCALE / 4 * draw_scale
 			draw_set_transform(gizmos_origin + char_position, 0, draw_scale * CHAR_SCALE)
@@ -224,9 +230,10 @@ func _draw() -> void:
 			draw_char(font, proj_back_local_scale / CHAR_SCALE, "Z")
 			draw_set_transform_matrix(Transform2D())
 		elif object.hovered:
-			draw_multiline(points, hovered_color, 1.0)
+			draw_multiline(points, hovered_color)
 
 
+## resizes the vector [param v] by amount [param l] but clamps the resized length to original length
 func _resize_vector(v: Vector2, l: float) -> Vector2:
 	return (v.normalized() * l).limit_length(v.length())
 
@@ -244,6 +251,9 @@ func _find_curve(a: Vector2, b: Vector2) -> PackedVector2Array:
 
 
 func _find_arrow(a: Vector2, tilt := 0.5) -> PackedVector2Array:
+	# The middle point of line between b and c will now touch the
+	# starting point instead of the original "a" vector
+	a -= Vector2(0, 1).rotated(a.angle() + PI / 2) * 2
 	var b := a + Vector2(-tilt, 1).rotated(a.angle() + PI / 2) * 2
 	var c := a + Vector2(tilt, 1).rotated(a.angle() + PI / 2) * 2
 	return PackedVector2Array([a, b, c])

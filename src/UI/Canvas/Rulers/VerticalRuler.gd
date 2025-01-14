@@ -10,8 +10,13 @@ var last: Vector2
 
 
 func _ready() -> void:
-	Global.project_changed.connect(queue_redraw)
-	Global.main_viewport.item_rect_changed.connect(queue_redraw)
+	Global.project_switched.connect(queue_redraw)
+	Global.camera.zoom_changed.connect(queue_redraw)
+	Global.camera.rotation_changed.connect(queue_redraw)
+	Global.camera.offset_changed.connect(queue_redraw)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	queue_redraw()
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -21,7 +26,7 @@ func _gui_input(event: InputEvent) -> void:
 
 # Code taken and modified from Godot's source code
 func _draw() -> void:
-	var font: Font = Global.control.theme.default_font
+	var font := Themes.get_font()
 	var transform := Transform2D()
 	var ruler_transform := Transform2D()
 	var major_subdivide := Transform2D()
@@ -81,7 +86,14 @@ func _draw() -> void:
 			var text_xform := Transform2D(-PI / 2, Vector2(font.get_height() - 4, pos.y - 2))
 			draw_set_transform_matrix(get_transform() * text_xform)
 			var val := ((ruler_transform * major_subdivide * minor_subdivide) * Vector2(0, j)).y
-			draw_string(font, Vector2(), str(snappedf(val, 0.1)))
+			draw_string(
+				font,
+				Vector2(),
+				str(snappedf(val, 0.1)),
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				Themes.get_font_size()
+			)
 			draw_set_transform_matrix(get_transform())
 		else:
 			if j % minor_subdivision == 0:

@@ -2,7 +2,7 @@ extends ImageEffect
 
 enum Animate { OFFSET_X, OFFSET_Y }
 var color := Color.BLACK
-var shader := preload("res://src/Shaders/DropShadow.gdshader")
+var shader := preload("res://src/Shaders/Effects/DropShadow.gdshader")
 
 @onready var shadow_color := $VBoxContainer/ShadowOptions/ShadowColor as ColorPickerButton
 
@@ -29,12 +29,11 @@ func commit_action(cel: Image, project := Global.current_project) -> void:
 	var offset_y := animate_panel.get_animated_value(commit_idx, Animate.OFFSET_Y)
 	var selection_tex: ImageTexture
 	if selection_checkbox.button_pressed and project.has_selection:
-		selection_tex = ImageTexture.create_from_image(project.selection_map)
+		var selection := project.selection_map.return_cropped_copy(project.size)
+		selection_tex = ImageTexture.create_from_image(selection)
 
 	var params := {
-		"shadow_offset": Vector2(offset_x, offset_y),
-		"shadow_color": color,
-		"selection": selection_tex,
+		"offset": Vector2(offset_x, offset_y), "shadow_color": color, "selection": selection_tex
 	}
 	if !has_been_confirmed:
 		for param in params:
@@ -42,7 +41,6 @@ func commit_action(cel: Image, project := Global.current_project) -> void:
 	else:
 		var gen := ShaderImageEffect.new()
 		gen.generate_image(cel, shader, params, project.size)
-		await gen.done
 
 
 func _on_OffsetSliders_value_changed(_value: Vector2) -> void:

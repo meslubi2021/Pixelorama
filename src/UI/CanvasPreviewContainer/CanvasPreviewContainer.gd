@@ -2,7 +2,7 @@ extends PanelContainer
 
 @onready var preview_zoom_slider := $VBox/HBox/VBoxContainer/PreviewZoomSlider as VSlider
 @onready var canvas_preview := $"%CanvasPreview" as Node2D
-@onready var camera := $"%CameraPreview" as Camera2D
+@onready var camera := $"%CameraPreview" as CanvasCamera
 @onready var play_button := $"%PlayButton" as Button
 @onready var start_frame := $"%StartFrame" as ValueSlider
 @onready var end_frame := $"%EndFrame" as ValueSlider
@@ -18,7 +18,6 @@ func _zoom_changed() -> void:
 
 func _on_PreviewZoomSlider_value_changed(value: float) -> void:
 	camera.zoom = Vector2(value, value)
-	camera.save_values_to_project()
 	camera.update_transparent_checker_offset()
 
 
